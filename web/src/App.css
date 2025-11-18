@@ -170,7 +170,9 @@ button.save-preset {
 .controls-area {
   border: 1px solid #364153;
   border-radius: 1.4rem;
-  padding: 2.4rem;
+  padding: 2rem;
   background: rgba(30, 41, 57, 0.5);
   align-self: center;
+
+  display: flex;
 }
