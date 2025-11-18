@@ -1,42 +1,176 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* App/Container layout */
+:root {
+  --primary-dark-color: rgba(3, 7, 18, 1.0);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app {
+  max-width: 128rem;
+  margin: 8rem auto;
+  padding: 0;
+  min-height: 90vh;
+  background-color: lightgreen;
+
+  display: flex;
+  gap: 4rem;
+  align-items: flex-start;
+  background: var(--primary-dark-color);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Sidebar */
+.sidebar {
+  flex: 0 0 22rem;
+  align-self: stretch;
+  max-height: 83.2rem;
+  padding: 1.6rem 1.7rem 0rem 1.6rem;
+  border-right: 1px solid rgb(30, 41, 57);
+  background: rgb(16, 24, 40);
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Devices */
+.device-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.6rem;
+  align-self: stretch;
+  list-style-type: none;
 }
 
-.card {
-  padding: 2em;
+/* DraggableItem */
+.device-list>.list-item {
+  align-self: stretch;
+  padding: 2rem 2.5rem;
+  background: rgb(30, 41, 57);
+  font-size: 1.6rem;
+  font-weight: 400;
+  border: 1px solid rgb(54, 65, 83);
+  border-radius: 1rem;
+  cursor: grab;
+
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
 }
 
-.read-the-docs {
-  color: #888;
+.preset-section {
+  align-self: stretch;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.6rem;
+}
+
+.preset-section>.heading {
+  /* font-size: inherit;
+  font-weight: inherit;
+  color: inherit; */
+}
+
+ul.presets-list {
+  list-style-type: none;
+  align-self: stretch;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+}
+
+.presets-item {
+ align-self: stretch;
+  padding: 2rem 2.5rem;
+  background: rgb(30, 41, 57);
+  font-size: 1.6rem;
+  font-weight: 400;
+  border: 1px solid rgb(54, 65, 83);
+  border-radius: 1rem;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.action-area {
+  align-self: stretch;
+  flex: 1 1 calc(100% - 22rem);
+  padding: 2.4rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1.6rem;
+}
+
+.top-bar {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sim-heading {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: white;
+}
+
+/* Actions */
+.cta {
+  flex: 0 1 auto;
+  padding: 0;
+
+  display: flex;
+  gap: 4px;
+  place-items: center;
+}
+
+button.save-preset {
+  outline: none;
+  width: 11.1rem;
+  height: 3.8rem;
+  background: rgb(43, 127, 255);
+  border: 1px solid rgb(54, 65, 83);
+  border-radius: .8rem;
+}
+
+.sim-field {
+  align-self: stretch;
+  flex: 1 1 auto;
+  padding: 2.4rem;
+
+  background: rgb(10, 16, 29);
+  border: 1px solid rgb(30, 41, 57);
+  border-radius: 1.4rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: space-between;
+  gap: 2rem;
+
+  /* place-items: center; */
+}
+
+
+.device-area {
+  position: relative; 
+  margin-top: 4rem;
+}
+
+.controls-area {
+  border: 1px solid #364153;
+  border-radius: 1.4rem;
+  padding: 2.4rem;
+  background: rgba(30, 41, 57, 0.5);
+  align-self: center;
 }

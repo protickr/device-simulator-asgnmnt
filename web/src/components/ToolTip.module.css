@@ -1,0 +1,29 @@
+.drag-tooltip {
+    position: absolute;
+    transform: translateY(-50%);
+    left: 100%;
+    top: 15%;
+    background: #4a78ff;
+    color: white;
+    padding: 1rem 1.6rem;
+    border-radius: .8rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* left arrow */
+.drag-tooltip::before {
+    content: "";
+    position: absolute;
+    left: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: .8rem solid transparent;
+    border-bottom: .8rem solid transparent;
+    border-right: 1rem solid #4a78ff;
+}
