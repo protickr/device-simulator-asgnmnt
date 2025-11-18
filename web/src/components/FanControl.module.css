@@ -1,5 +1,39 @@
 .fanControl {
-    background: rgba(30, 41, 57, 0.5);
-    border: 1px solid #364153;
-    border-radius: 14px;
+    background: rgba(30, 41, 57, 0.55);
+    border: 1px solid rgba(70, 110, 170, 0.12);
+    border-radius: 1.2rem;
+    width: 44.8rem;
+    height: 13.6rem;
+    padding: 1.8rem 2rem;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 .8rem 2.4rem rgba(6, 11, 19, 0.6), inset 0 1px 0 rgba(255,255,255,0.02);
 }
+
+.power {
+    display: flex; 
+    flex-direction: row; 
+    justify-content: space-between;
+}
+
+.speed {
+    display: flex; 
+    flex-direction: column; 
+}
+
+.speedInfo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label{
+    font-size: 1.6rem; 
+    font-weight: 400; 
+}
+
+.speedRange{
+    justify-self: stretch;
+}
+
