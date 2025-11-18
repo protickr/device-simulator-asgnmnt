@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaFan, FaLightbulb } from "react-icons/fa";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 
 import "./App.css";
 import Fan from "./components/Fan";
@@ -12,18 +12,24 @@ import DeviceDropZone from "./components/DeviceDropZone";
 function App() {
   const [isDropped, setDropped] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+  const [activeDeviceType, setActiveDeviceType] = useState<string | null>(null);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const type = event.active.id.toString().split("-")[0];
+    if (event?.over?.id === "drop-area") {
+      console.log("type", type);
+      setDropped(true);
+      setShowTooltip(false);
+      setActiveDeviceType(type);
+    }
+  };
 
   return (
     <>
       <h1>device simulator</h1>
       <DndContext
         onDragStart={() => setShowTooltip(false)}
-        onDragEnd={(event) => {
-          if (event.over?.id === "drop-area") {
-            setDropped(true);
-            setShowTooltip(false);
-          }
-        }}
+        onDragEnd={handleDragEnd}
       >
         <div className="app">
           {/* sidebar starts */}
@@ -70,7 +76,7 @@ function App() {
               {/* device drop zone here */}
               {!isDropped ? (
                 <DeviceDropZone>Drag anything here</DeviceDropZone>
-              ) : (
+              ) : activeDeviceType === "fan" ? (
                 <>
                   <div className="device-area">
                     <Fan></Fan>
@@ -79,6 +85,18 @@ function App() {
                     <FanControl></FanControl>
                   </div>
                 </>
+              ) : (
+                // activeDeviceType === "light" && (
+                //   <>
+                //     <div className="device-area">
+                //       <Light></Light>
+                //     </div>
+                //     <div className="controls-area">
+                //       <LightControl></LightControl>
+                //     </div>
+                //   </>
+                // )
+                "Not Implemented Yet"
               )}
             </div>
           </div>
