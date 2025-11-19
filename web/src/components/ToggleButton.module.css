@@ -1,0 +1,44 @@
+.toggleSwitch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.input {
+  display: none;
+}
+
+.slider {
+  position: relative;
+  width: 5.0rem;
+  height: 2.4rem;
+  background-color: #9bb6df;
+  border-radius: 2.4rem;
+  transition: background-color 0.3s ease;
+}
+
+/* Knob */
+.slider::before {
+  content: "";
+  position: absolute;
+  height: 1.8rem;
+  width: 1.8rem;
+  left: .3rem;
+  bottom: .3rem;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+/* ON State */
+.input:checked + .slider {
+  background-color: #1e90ff;
+}
+
+.input:checked + .slider::before {
+  transform: translateX(26px);
+}
+
