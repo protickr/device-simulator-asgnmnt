@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { FaFan, FaLightbulb } from "react-icons/fa";
+import { FaFan, FaLightbulb, FaTrash } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import { Toaster } from "react-hot-toast";
 
 import "./App.css";
 import Fan from "./components/Fan";
@@ -9,17 +10,27 @@ import ToolTip from "./components/ToolTop";
 import DraggableDeviceItem from "./components/DragableDeviceItem";
 import DeviceDropZone from "./components/DeviceDropZone";
 
-function App() {
+import Modal from "./components/Modal";
+import SavePresetForm from "./components/SavePresetForm";
+
+// 1. Import Context Provider and Hook
+import { PresetsProvider, usePresets } from "./contexts/PresetContext";
+import type { Preset } from "./contexts/PresetContext";
+
+function AppContent() {
   const [isDropped, setDropped] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
   const [activeDeviceType, setActiveDeviceType] = useState<string | null>(null);
   const [speed, setSpeed] = useState(0);
   const [isOn, setIsOn] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 2. Use Context
+  const { presets, isLoading, deletePreset } = usePresets();
 
   const handleDragEnd = (event: DragEndEvent) => {
     const type = event.active.id.toString().split("-")[0];
     if (event?.over?.id === "drop-area") {
-      console.log("type", type);
       setDropped(true);
       setShowTooltip(false);
       setActiveDeviceType(type);
@@ -31,6 +42,26 @@ function App() {
     setSpeed(0);
     setDropped(false);
     setShowTooltip(true);
+    setActiveDeviceType(null);
+  };
+
+  // 3. Function to load a saved preset back into the canvas
+  const loadPreset = (preset: Preset) => {
+    setActiveDeviceType(preset.deviceType);
+    setIsOn(preset.settings.isOn ?? false);
+    setSpeed(preset.settings.speed ?? 0);
+    setDropped(true);
+    setShowTooltip(false);
+  };
+
+  const handleDeletePreset = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    id: string | number
+  ) => {
+    e.stopPropagation(); // Stop the click from "loading" the preset
+    if (window.confirm("Are you sure?")) {
+      deletePreset(id);
+    }
   };
 
   return (
@@ -57,9 +88,45 @@ function App() {
 
             <div className="preset-section">
               <h1 className="heading">Saved Presets</h1>
-              <ul className="presets-list">
-                <li className="presets-item">Nothing saved yet</li>
-              </ul>
+
+              {/* 4. Render List from Context */}
+              {isLoading ? (
+                <p>Loading...</p>
+              ) : (
+                <ul className="presets-list">
+                  {presets.length === 0 ? (
+                    <li className="presets-item">Nothing saved yet</li>
+                  ) : (
+                    presets.map((preset) => (
+                      <li
+                        key={preset.id}
+                        className="presets-item"
+                        onClick={() => loadPreset(preset)}
+                        style={{
+                          cursor: "pointer",
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <span>
+                          {preset.name} <small>({preset.deviceType})</small>
+                        </span>
+                        <button
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "red",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => handleDeletePreset(e, preset.id)}
+                        >
+                          <FaTrash />
+                        </button>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              )}
             </div>
           </div>
           {/* sidebar ends */}
@@ -71,12 +138,17 @@ function App() {
                 <button className="clear" onClick={handleClear}>
                   Clear
                 </button>
-                <button className="save-preset"> Save Preset </button>
+                <button
+                  className="save-preset"
+                  onClick={() => setIsModalOpen(true)}
+                  disabled={!isDropped}
+                >
+                  Save Preset
+                </button>
               </div>
             </div>
 
             <div className="sim-field">
-              {/* device drop zone here */}
               {!isDropped ? (
                 <DeviceDropZone>Drag anything here</DeviceDropZone>
               ) : activeDeviceType === "fan" ? (
@@ -94,23 +166,35 @@ function App() {
                   </div>
                 </>
               ) : (
-                // activeDeviceType === "light" && (
-                //   <>
-                //     <div className="device-area">
-                //       <Light></Light>
-                //     </div>
-                //     <div className="controls-area">
-                //       <LightControl></LightControl>
-                //     </div>
-                //   </>
-                // )
                 "Not Implemented Yet"
               )}
             </div>
           </div>
         </div>
       </DndContext>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Save Preset"
+      >
+        <SavePresetForm
+          setIsModalOpen={setIsModalOpen}
+          // 5. Pass current app state to the form
+          currentSettings={{ activeDeviceType, speed, isOn }}
+        />
+      </Modal>
     </>
+  );
+}
+
+// 6. Main App Component Wrapper
+function App() {
+  return (
+    <PresetsProvider>
+      <Toaster position="top-center" reverseOrder={false} />
+      <AppContent />
+    </PresetsProvider>
   );
 }
 

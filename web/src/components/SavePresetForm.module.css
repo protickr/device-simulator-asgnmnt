@@ -1,0 +1,54 @@
+.input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border-radius: 0.6rem;
+  background-color: rgb(51, 65, 85); 
+  border: 1px solid rgb(71, 85, 105);
+  color: white;
+  font-size: 1.2rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgb(59, 130, 246);}
+
+.helperText {
+  color: rgb(148, 163, 184);
+  font-size: 0.85rem;
+  margin-top: .8rem;
+  margin-bottom: 2.4rem;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1.2rem;
+}
+
+.cancelBtn {
+  background: none;
+  border: none;
+  color: #cbd5e1;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.cancelBtn:hover {
+  background-color: rgba(255,255,255, 0.1);
+}
+
+.saveBtn {
+  background-color: rgb(37, 99, 235);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.6rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.saveBtn:hover {
+  background-color: rgb(29, 78, 216);
+}
