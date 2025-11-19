@@ -4,10 +4,9 @@ import toast from "react-hot-toast";
 const BASE_URL = import.meta.env.VITE_API_URL; // VITE_ prefix is mandatory 
 
 interface PresetSettings {
-  isOn?: boolean;
   power?: boolean;
   speed?: number;
-  intensity?: number;
+  brightness?: number;
   color?: string;
 }
 
@@ -25,7 +24,7 @@ interface CreatePresetInput {
   settings: {
     power: boolean;
     speed?: number;
-    intensity?: number;
+    brightness?: number;
     color?: string;
   };
 }
