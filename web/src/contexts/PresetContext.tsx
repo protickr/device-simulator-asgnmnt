@@ -3,30 +3,27 @@ import type { ReactNode } from "react";
 import toast from "react-hot-toast";
 const BASE_URL = import.meta.env.VITE_API_URL; // VITE_ prefix is mandatory 
 
+// preset settings stored as deviceJson in preset table
 interface PresetSettings {
-  power?: boolean;
+  power: boolean;
   speed?: number;
   brightness?: number;
   color?: string;
 }
 
+// preset details
 export interface Preset {
   id: string | number;
   name: string;
-  deviceType: string;
   type?: string;
-  settings: PresetSettings;
+  device: PresetSettings;
 }
 
+// preset input for creating a new preset
 interface CreatePresetInput {
   name: string;
   type: string;
-  settings: {
-    power: boolean;
-    speed?: number;
-    brightness?: number;
-    color?: string;
-  };
+  device: PresetSettings;
 }
 
 interface PresetsState {
