@@ -1,11 +1,15 @@
 # Device Simulator Web Application
 
-A full-stack web application that allows users to interact with and control virtual devices (Light and Fan) inside a sandbox environment. Users can place devices into a workspace, control their settings, and save/load preset configurations.
+A full-stack web application that allows users to interact with and control virtual devices (Fan and Light) inside a sandbox environment. Users can place devices into a workspace, control their settings, and save/load preset configurations.
 
 ## 🚀 Live Demo
 
 - **Frontend Application:** [https://device-simulator-asgnmnt.vercel.app/](https://device-simulator-asgnmnt.vercel.app/)
 - **Backend API:** [https://device-simulator-asgnmnt.onrender.com/api](https://device-simulator-asgnmnt.onrender.com/api)
+
+> **Note:** The backend is deployed on Render's free tier, which spins down after periods of inactivity. Please allow up to a minute for the initial request to process while the service restarts. Subsequent requests will be processed immediately.  
+  
+_the spinning fan took quite sometime to implement, especially to avoid jitter and acceleration and decelleration_ 
 
 ## 📂 Project Structure
 
@@ -16,7 +20,7 @@ A full-stack web application that allows users to interact with and control virt
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React, Vite, TailwindCSS (if applicable), React DnD (or similar for drag-and-drop).
+- **Frontend:** React, Vite, CSS modules, dnd-kit for drag-and-drop.
 - **Backend:** PHP (Laravel).
 - **Database:** MySQL.
 
@@ -121,9 +125,9 @@ A Postman collection is included in the root directory: `device-simulator.postma
 
 ## ✨ Features
 
-- **Drag-and-Drop Interface:** Drag devices (Light, Fan) from the sidebar to the canvas.
+- **Drag-and-Drop Interface:** Drag devices ( Fan, Light) from the sidebar to the canvas.
 - **Device Controls:**
-    - **Light:** Toggle Power, Adjust Brightness, Change Color Temperature.
     - **Fan:** Toggle Power, Adjust Speed.
+    - **Light:** Toggle Power, Adjust Brightness, Change Color Temperature. _not completed_
 - **Preset Management:** Save current configurations as presets and load them later.
 - **Persistence:** Data is saved to the database and persists across reloads.

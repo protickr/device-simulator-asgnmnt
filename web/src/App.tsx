@@ -80,11 +80,12 @@ function AppContent() {
           <div className="sidebar">
             <h1>Devices</h1>
             <ul className="device-list">
-              <DraggableDeviceItem type="light" itemCls="list-item">
-                {<FaLightbulb />} Light
-              </DraggableDeviceItem>
               <DraggableDeviceItem type="fan" itemCls="list-item">
                 {<FaFan />} Fan
+              </DraggableDeviceItem>
+
+              <DraggableDeviceItem type="light" itemCls="list-item">
+                {<FaLightbulb />} Light
               </DraggableDeviceItem>
             </ul>
 
