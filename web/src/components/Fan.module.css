@@ -1,8 +1,9 @@
 .fan-container {
     position: relative;
     width: 32rem;
-    height: 32rem; 
-    /* animation: spin 1s linear infinite; */
+    height: 32rem;
+    /* animation: spin 1s linear infinite;
+    animation-play-state: paused */
 }
 
 .blade {
@@ -48,8 +49,7 @@
     background: linear-gradient(135deg, #4A5565 0%, #1E2939 100%);
     border: 4px solid #364153;
     box-shadow: 0px 2.5rem 5rem -1.2rem rgba(0, 0, 0, 0.25);
-    border-radius: 1.67772e+07px; /* copied from figma */
-    
+    border-radius: 1.67772e+07px;
 }
 
 
@@ -58,7 +58,8 @@
         transform: rotate(0deg);
     }
 
-    100%{
+    100% {
+        /* transform: rotate(360deg * (var(--fan-speed) / 100) * var(---fan-is-on)); */
         transform: rotate(360deg);
     }
 }

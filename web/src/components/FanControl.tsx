@@ -1,16 +1,22 @@
-import { useState } from "react";
 import styles from "./FanControl.module.css";
+import ToggleButton from "./ToggleButton";
 
-function FanControl() {
-  const [speed, setSpeed] = useState(0);
+type FanControlProps = {
+  isOn: boolean;
+  setIsOn: (newValue: boolean) => void;
+  speed: number;
+  setSpeed: (newValue: number) => void;
+};
 
+function FanControl({ isOn, setIsOn, speed, setSpeed }: FanControlProps) {
   return (
     <div className={styles.fanControl}>
       <div className={styles.power}>
         <div>
           <span className={styles.label}>Power</span>
         </div>
-        <button aria-label="toggle-power"> power</button>
+        {/* <button> power</button> */}
+        <ToggleButton value={isOn} onChange={setIsOn} />
       </div>
 
       <div className={styles.speed}>

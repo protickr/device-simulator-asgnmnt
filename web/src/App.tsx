@@ -13,6 +13,8 @@ function App() {
   const [isDropped, setDropped] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
   const [activeDeviceType, setActiveDeviceType] = useState<string | null>(null);
+  const [speed, setSpeed] = useState(0);
+  const [isOn, setIsOn] = useState(false);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const type = event.active.id.toString().split("-")[0];
@@ -22,6 +24,13 @@ function App() {
       setShowTooltip(false);
       setActiveDeviceType(type);
     }
+  };
+
+  const handleClear = () => {
+    setIsOn(false);
+    setSpeed(0);
+    setDropped(false);
+    setShowTooltip(true);
   };
 
   return (
@@ -59,13 +68,7 @@ function App() {
             <div className="top-bar">
               <h1 className="sim-heading">Testing Canvas</h1>
               <div className="cta">
-                <button
-                  className="clear"
-                  onClick={() => {
-                    setDropped(false);
-                    setShowTooltip(true);
-                  }}
-                >
+                <button className="clear" onClick={handleClear}>
                   Clear
                 </button>
                 <button className="save-preset"> Save Preset </button>
@@ -79,10 +82,15 @@ function App() {
               ) : activeDeviceType === "fan" ? (
                 <>
                   <div className="device-area">
-                    <Fan></Fan>
+                    <Fan power={isOn} speed={speed}></Fan>
                   </div>
                   <div className="controls-area">
-                    <FanControl></FanControl>
+                    <FanControl
+                      isOn={isOn}
+                      setIsOn={setIsOn}
+                      speed={speed}
+                      setSpeed={setSpeed}
+                    ></FanControl>
                   </div>
                 </>
               ) : (

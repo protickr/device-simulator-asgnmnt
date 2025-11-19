@@ -1,6 +1,8 @@
 /* App/Container layout */
 :root {
   --primary-dark-color: rgba(3, 7, 18, 1.0);
+  /* --fan-is-on: "0";
+  --fan-speed: "100%"  */
 }
 
 .app {
