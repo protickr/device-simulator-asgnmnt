@@ -1,16 +1,24 @@
 import styles from "./Fan.module.css";
 import { useEffect, useRef } from "react";
 
-function Fan({ power = true, speed = 100 }) {
-  const fanRef = useRef(null);
-  const requestRef = useRef(null);
+interface FanProps {
+  power?: boolean;
+  speed?: number;
+}
+
+function Fan({ power = true, speed = 100 }: FanProps) {
+  const fanRef = useRef<HTMLDivElement | null>(null);
+  const requestRef = useRef<number | null>(null);
 
   // 1. Store latest inputs in a ref so the animation loop can read them
   //    without needing to restart the useEffect
-  const inputsRef = useRef({ power, speed });
+  const inputsRef = useRef<{ power: boolean; speed: number }>({ power, speed });
 
   // 2. Physics State (Mutable, does not trigger re-renders)
-  const physicsRef = useRef({
+  const physicsRef = useRef<{
+    currentSpeed: number;
+    rotation: number;
+  }>({
     currentSpeed: 0, // 0 to 100
     rotation: 0, // 0 to 360
   });
@@ -65,8 +73,12 @@ function Fan({ power = true, speed = 100 }) {
     requestRef.current = requestAnimationFrame(animate);
 
     // Cleanup
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Empty dependency array = Runs once on mount, never restarts
+    return () => {
+      if (requestRef.current !== null) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className={`${styles["fan-container"]}`} ref={fanRef}>

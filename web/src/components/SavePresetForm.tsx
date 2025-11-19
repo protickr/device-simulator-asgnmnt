@@ -8,7 +8,7 @@ interface SavePresetFormProps {
     activeDeviceType: string | null;
     isOn: boolean;
     speed?: number;
-    intensity?: number;
+    brightness?: number;
     color?: string;
   };
 }
@@ -27,14 +27,14 @@ function SavePresetForm({
     const newPreset = {
       name: presetName,
       type: currentSettings.activeDeviceType,
-      settings: {
+      device: {
         power: currentSettings.isOn,
         ...(currentSettings.activeDeviceType === "fan"
           ? {
               speed: currentSettings.speed,
             }
           : {
-              intensity: currentSettings.intensity,
+              brightness: currentSettings.brightness,
               color: currentSettings.color,
             }),
       },
@@ -71,7 +71,9 @@ function SavePresetForm({
         </button>
         <button
           className={styles.saveBtn}
-          onClick={handleSubmit}
+          onClick={(e) => {
+            void handleSubmit(e);
+          }}
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save Preset"}

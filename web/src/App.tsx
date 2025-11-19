@@ -29,11 +29,34 @@ function AppContent() {
   const { presets, isLoading, deletePreset } = usePresets();
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const type = event.active.id.toString().split("-")[0];
-    if (event?.over?.id === "drop-area") {
+    const { active, over } = event;
+    const type = active.id.toString().split("-")[0];
+
+    if (over?.id === "drop-area") {
       setDropped(true);
       setShowTooltip(false);
-      setActiveDeviceType(type);
+
+      // Get the attached preset data, if any
+      const presetData = active.data.current?.preset as Preset | undefined;
+
+      if (presetData) {
+        // Preset dropped: load its settings
+        const {
+          type,
+          device: { power, speed, brightness, color },
+        } = presetData;
+        setActiveDeviceType(type as string);
+        console.log("🚀 ~ handleDragEnd ~ type:", type, power, speed);
+        setIsOn(power);
+        setSpeed(speed as number);
+
+        //todo:  implement brightness and color temp for light-bulb later
+      } else {
+        // New device dropped: set type and reset state
+        setActiveDeviceType(type);
+        setIsOn(false);
+        setSpeed(0);
+      }
     }
   };
 
@@ -43,25 +66,6 @@ function AppContent() {
     setDropped(false);
     setShowTooltip(true);
     setActiveDeviceType(null);
-  };
-
-  // 3. Function to load a saved preset back into the canvas
-  const loadPreset = (preset: Preset) => {
-    setActiveDeviceType(preset.deviceType);
-    setIsOn(preset.settings.isOn ?? false);
-    setSpeed(preset.settings.speed ?? 0);
-    setDropped(true);
-    setShowTooltip(false);
-  };
-
-  const handleDeletePreset = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: string | number
-  ) => {
-    e.stopPropagation(); // Stop the click from "loading" the preset
-    if (window.confirm("Are you sure?")) {
-      deletePreset(id);
-    }
   };
 
   return (
@@ -76,10 +80,10 @@ function AppContent() {
           <div className="sidebar">
             <h1>Devices</h1>
             <ul className="device-list">
-              <DraggableDeviceItem type="light">
+              <DraggableDeviceItem type="light" itemCls="list-item">
                 {<FaLightbulb />} Light
               </DraggableDeviceItem>
-              <DraggableDeviceItem type="fan">
+              <DraggableDeviceItem type="fan" itemCls="list-item">
                 {<FaFan />} Fan
               </DraggableDeviceItem>
             </ul>
@@ -98,31 +102,15 @@ function AppContent() {
                     <li className="presets-item">Nothing saved yet</li>
                   ) : (
                     presets.map((preset) => (
-                      <li
+                      <DraggableDeviceItem
                         key={preset.id}
-                        className="presets-item"
-                        onClick={() => loadPreset(preset)}
-                        style={{
-                          cursor: "pointer",
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
+                        type={preset.type as string}
+                        itemCls="presets-item"
+                        data={{ preset: preset }}
                       >
-                        <span>
-                          {preset.name} <small>({preset.deviceType})</small>
-                        </span>
-                        <button
-                          style={{
-                            background: "transparent",
-                            border: "none",
-                            color: "red",
-                            cursor: "pointer",
-                          }}
-                          onClick={(e) => handleDeletePreset(e, preset.id)}
-                        >
-                          <FaTrash />
-                        </button>
-                      </li>
+                        {preset.type === "fan" ? <FaFan /> : <FaLightbulb />}
+                        {preset.name}
+                      </DraggableDeviceItem>
                     ))
                   )}
                 </ul>

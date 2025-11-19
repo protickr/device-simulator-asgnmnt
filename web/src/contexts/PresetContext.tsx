@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import type { ReactNode } from "react";
 import toast from "react-hot-toast";
-const BASE_URL = import.meta.env.VITE_API_URL; // VITE_ prefix is mandatory 
+const BASE_URL = import.meta.env.VITE_API_URL as string; // VITE_ prefix is mandatory
 
 // preset settings stored as deviceJson in preset table
 interface PresetSettings {
@@ -104,9 +104,15 @@ function PresetsProvider({ children }: PresetsProviderProps) {
   useEffect(function () {
     async function fetchPresets() {
       dispatch({ type: "loading" });
+
       try {
         const res = await fetch(`${BASE_URL}/presets`);
-        const data = (await res.json()) as Preset[];
+        if (!res.ok) throw new Error(`Failed to load presets ${res.status}`);
+
+        const payload = await res.json();
+
+        const data = Array.isArray(payload) ? payload : payload.data ?? [];
+
         dispatch({ type: "presets/loaded", payload: data });
       } catch (err) {
         const errorMessage =
@@ -126,8 +132,9 @@ function PresetsProvider({ children }: PresetsProviderProps) {
         body: JSON.stringify(newPreset),
         headers: { "Content-Type": "application/json" },
       });
-      const data = (await res.json()) as Preset;
-      dispatch({ type: "preset/created", payload: data });
+      if (!res.ok) throw new Error(`Failed to create preset ${res.status}`);
+      const payload = (await res.json()) as Preset;
+      dispatch({ type: "preset/created", payload: payload });
       toast.success("Preset saved successfully");
     } catch (err) {
       toast.error("Preset couldn't be saved");
@@ -140,7 +147,12 @@ function PresetsProvider({ children }: PresetsProviderProps) {
   async function deletePreset(id: string | number): Promise<void> {
     dispatch({ type: "loading" });
     try {
-      await fetch(`${BASE_URL}/presets/${id}`, { method: "DELETE" });
+      const res = await fetch(`${BASE_URL}/presets/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok && res.status !== 204) {
+        throw new Error(`Failed to delete preset (${res.status})`);
+      }
       dispatch({ type: "preset/deleted", payload: id });
     } catch (err) {
       const errorMessage =

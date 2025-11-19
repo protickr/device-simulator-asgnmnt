@@ -3,25 +3,27 @@ import React, { useId } from "react";
 
 type DraggableDeviceItemProps = {
   type: string;
-  onClick?: (event: React.MouseEvent<HTMLLIElement>) => void;
   children: React.ReactNode;
+  itemCls?: string;
+  data?: object;
 };
 
 function DraggableDeviceItem({
   type,
-  onClick,
   children,
+  itemCls,
+  data,
 }: DraggableDeviceItemProps) {
   const id = useId();
 
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: `${type}-${id}`,
+    data: data,
   });
 
   return (
     <li
-      className="list-item"
-      onClick={onClick}
+      className={itemCls ?? ""}
       ref={setNodeRef}
       {...listeners}
       {...attributes}
