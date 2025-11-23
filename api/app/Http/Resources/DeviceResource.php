@@ -18,11 +18,12 @@ class DeviceResource extends JsonResource
         return [
             // UUID primary key
             'id' => $this->id,
-            'type' => $this->type,
             'name' => $this->name,
+            'type' => $this->type,
             // The JSON settings object
-            'settings' => $this->settings,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'allowedSettings' => $this->allowed_settings,
+            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
+            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 }
