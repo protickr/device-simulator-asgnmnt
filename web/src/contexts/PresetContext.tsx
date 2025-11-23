@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import type { ReactNode } from "react";
 import toast from "react-hot-toast";
-const BASE_URL = import.meta.env.VITE_API_URL as string; // VITE_ prefix is mandatory
+const BASE_URL = import.meta.env.VITE_API_URL as string; // "VITE_" prefix is mandatory
 
 // preset settings stored as deviceJson in preset table
 interface PresetSettings {

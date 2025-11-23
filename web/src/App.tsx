@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaFan, FaLightbulb, FaTrash } from "react-icons/fa";
+import { FaFan, FaLightbulb } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { Toaster } from "react-hot-toast";
 
@@ -27,7 +27,7 @@ function AppContent() {
   const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
 
   // 2. Use Context
-  const { presets, isLoading, deletePreset } = usePresets();
+  const { presets, isLoading } = usePresets();
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
