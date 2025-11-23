@@ -18,14 +18,14 @@ class StorePresetRequest extends FormRequest
      * Modify validated data before sending to controller.
      * This is where we convert camelCase to snake_case.
      */
-    protected function passedValidation()
+    protected function prepareForValidation()
     {
         // This allows you to "mutate" the validated data for the controller
         $this->replace([
-            'device_id' => $this->deviceId ?? null,
-            'name'             => $this->name,
-            'type'             => $this->type,
-            'configs'          => $this->configs,
+            'device_id'         => $this->deviceId ?? null,
+            'name'              => $this->name,
+            'type'              => $this->type,
+            'configs'           => $this->configs,
         ]);
     }
 
@@ -37,7 +37,7 @@ class StorePresetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'deviceId' => ['required', 'exists:devices,id'],
+            'device_id' => ['required', 'exists:devices,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', 'max:50'],
             'configs' => ['required', 'array'],

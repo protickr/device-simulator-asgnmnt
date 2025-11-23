@@ -14,6 +14,11 @@ class DeviceController extends Controller
         return DeviceResource::collection(Device::all());
     }
 
+    public function show(Device $device): DeviceResource
+    {
+        return DeviceResource::make($device);
+    }
+
     public function store(StoreDeviceRequest $request): DeviceResource
     {
         $device = Device::create($request->validated());

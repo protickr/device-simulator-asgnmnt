@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePresetRequest;
 use App\Http\Requests\UpdatePresetRequest;
 use App\Http\Resources\PresetResource;
+use App\Models\Device;
 use App\Models\Preset;
 use Illuminate\Http\Response;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

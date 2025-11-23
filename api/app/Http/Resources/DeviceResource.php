@@ -22,8 +22,8 @@ class DeviceResource extends JsonResource
             'type' => $this->type,
             // The JSON settings object
             'allowedSettings' => $this->allowed_settings,
-            'createdAt' => $this->created_at->format('Y-m-d H:i:s'),
-            'updatedAt' => $this->updated_at->format('Y-m-d H:i:s'),
+            'createdAt' => $this->created_at?->toISOString(),
+            'updatedAt' => $this->updated_at?->toISOString(),
         ];
     }
 }
