@@ -64,3 +64,5 @@ public/storage
 
 # IDE Extensions
 .vscode/extensions
+**/.idea
+**/todo.txt

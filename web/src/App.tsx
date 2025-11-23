@@ -24,6 +24,7 @@ function AppContent() {
   const [speed, setSpeed] = useState(0);
   const [isOn, setIsOn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
 
   // 2. Use Context
   const { presets, isLoading, deletePreset } = usePresets();
@@ -46,7 +47,7 @@ function AppContent() {
           device: { power, speed, brightness, color },
         } = presetData;
         setActiveDeviceType(type as string);
-        console.log("🚀 ~ handleDragEnd ~ type:", type, power, speed);
+        setActiveDeviceId(active.id);
         setIsOn(power);
         setSpeed(speed as number);
 
@@ -123,18 +124,20 @@ function AppContent() {
           <div className="action-area">
             <div className="top-bar">
               <h1 className="sim-heading">Testing Canvas</h1>
-              <div className="cta">
-                <button className="clear" onClick={handleClear}>
-                  Clear
-                </button>
-                <button
-                  className="save-preset"
-                  onClick={() => setIsModalOpen(true)}
-                  disabled={!isDropped}
-                >
-                  Save Preset
-                </button>
-              </div>
+              {activeDeviceId && (
+                <div className="cta">
+                  <button className="clear" onClick={handleClear}>
+                    Clear
+                  </button>
+                  <button
+                    className="save-preset"
+                    onClick={() => setIsModalOpen(true)}
+                    disabled={!isDropped}
+                  >
+                    Save Preset
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="sim-field">
