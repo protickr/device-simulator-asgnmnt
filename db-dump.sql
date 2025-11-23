@@ -74,7 +74,7 @@ CREATE TABLE `devices` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` enum('fan','light') COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `settings` json NOT NULL,
+  `allowed_settings` json NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -87,7 +87,7 @@ CREATE TABLE `devices` (
 
 LOCK TABLES `devices` WRITE;
 /*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-INSERT INTO `devices` VALUES ('019a9b57-0b7c-72cf-8169-2163dad6f2df','fan','Living Room Fan','{\"power\": true, \"speed\": 100}','2025-11-19 02:59:24','2025-11-19 02:59:24'),('019a9b58-53c8-7093-8ea6-2f409d4286a1','fan','Some other fan','{\"power\": true, \"speed\": 80}','2025-11-19 03:00:48','2025-11-19 03:00:48');
+INSERT INTO `devices` VALUES ('019ab282-b671-7097-b802-a7e5e498246c','light','Smart Light Basic','{\"color\": {\"type\": \"colors\", \"options\": [\"#A09682\", \"#9AA0AA\", \"#65879D\", \"#9B7B86\"]}, \"power\": {\"type\": \"boolean\"}, \"intensity\": {\"max\": 100, \"min\": 0, \"type\": \"range\"}}','2025-11-23 14:58:22','2025-11-23 14:58:22'),('019ab283-9d4b-72e7-9f76-7733079352ed','fan','Bedroom Fan','{\"power\": {\"type\": \"boolean\"}, \"intensity\": {\"max\": 3, \"min\": 1, \"type\": \"range\"}}','2025-11-23 14:59:21','2025-11-23 14:59:21');
 /*!40000 ALTER TABLE `devices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -192,7 +192,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -201,7 +201,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_11_19_071603_create_devices_table',1),(5,'2025_11_19_091857_create_presets_table',2),(6,'2025_11_19_095022_add_type_column_to_presets_table',2);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2025_11_19_071603_create_devices_table',1),(5,'2025_11_19_091857_create_presets_table',1),(6,'2025_11_19_095022_add_type_column_to_presets_table',1),(7,'2025_11_23_201051_rename_settings_to_allowed_settings',2),(8,'2025_11_23_201235_add_device_id_to_presets',2);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,10 +240,13 @@ CREATE TABLE `presets` (
   `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `devices` json NOT NULL,
+  `configs` json NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `device_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `presets_device_id_foreign` (`device_id`),
+  CONSTRAINT `presets_device_id_foreign` FOREIGN KEY (`device_id`) REFERENCES `devices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -253,7 +256,7 @@ CREATE TABLE `presets` (
 
 LOCK TABLES `presets` WRITE;
 /*!40000 ALTER TABLE `presets` DISABLE KEYS */;
-INSERT INTO `presets` VALUES ('019a9b9c-ca3f-71cc-918e-64617c2bb9df','fantastic','fan','{\"power\": true, \"speed\": 59}','2025-11-19 04:15:35','2025-11-19 04:15:35'),('019a9c4d-de10-727d-b1b4-c275d35975c3','new fan','fan','{\"power\": true, \"speed\": 40}','2025-11-19 07:29:00','2025-11-19 07:29:00');
+INSERT INTO `presets` VALUES ('019ab28a-c6b7-725a-a9a2-87df58d4cec1','Night Mode','fan','{\"color\": null, \"power\": true, \"intensity\": 50}','2025-11-23 15:07:10','2025-11-23 15:07:10','019ab283-9d4b-72e7-9f76-7733079352ed');
 /*!40000 ALTER TABLE `presets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -283,7 +286,6 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('OqWB34b5fjZpOZpYRk4n69WP9b7JwYvroeLpPrkT',NULL,'127.0.0.1','PostmanRuntime/7.49.0','YTozOntzOjY6Il90b2tlbiI7czo0MDoiaVJWUmN3QVhrT3pIczZxczdjcUJtd2NpTXBaUWZOeGw5eVI2UGx4WCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1763543129);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -314,7 +316,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Test User','test@example.com','2025-11-19 02:45:46','$2y$12$sVcPjRieNOqAjKkAylBfJOvBeJIadgMOOmmSqlMsuJROTh7xSyAba','w7O6vV0kJ8','2025-11-19 02:45:47','2025-11-19 02:45:47');
+INSERT INTO `users` VALUES (1,'Test User','test@example.com','2025-11-23 09:15:08','$2y$12$84fKBL.eVB5BVQE0mLVTIuW1GNk9t74XS9sccB2LGgfmN0DZ63z.2','IbU7HJAVWY','2025-11-23 09:15:08','2025-11-23 09:15:08');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -327,4 +329,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-19 22:11:15
+-- Dump completed on 2025-11-24  4:27:40

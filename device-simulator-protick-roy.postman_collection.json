@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "41389e7f-062c-44da-9cb5-bff10f2fd4a4",
+		"name": "device-simulator",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14041781"
+	},
+	"item": [
+		{
+			"name": "all devices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/devices",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "device details by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/devices/019ab283-9d4b-72e7-9f76-7733079352ed",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"devices",
+						"019ab283-9d4b-72e7-9f76-7733079352ed"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all presets",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/presets",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"presets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "preset details by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/presets/019ab28a-c6b7-725a-a9a2-87df58d4cec1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"presets",
+						"019ab28a-c6b7-725a-a9a2-87df58d4cec1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new device - light",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Smart Light Basic\",\n  \"type\": \"light\",\n  \"allowedSettings\": {\n    \"power\": {\n      \"type\": \"boolean\"\n    },\n    \"intensity\": {\n      \"type\": \"range\",\n      \"min\": 0,\n      \"max\": 100\n    },\n    \"color\": {\n      \"type\": \"colors\",\n      \"options\": [\n        \"#A09682\",\n        \"#9AA0AA\",\n        \"#65879D\",\n        \"#9B7B86\"\n      ]\n    }\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/devices",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "new device - fan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Bedroom Fan\",\n  \"type\": \"fan\",\n  \"allowedSettings\": {\n    \"power\": {\n      \"type\": \"boolean\"\n    },\n    \"intensity\": {\n      \"type\": \"range\",\n      \"min\": 1,\n      \"max\": 3\n    }\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/devices",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"devices"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "a preset",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": null,\n  \"deviceId\": \"019ab283-9d4b-72e7-9f76-7733079352ed\",\n  \"name\": \"Night Mode\",\n  \"type\": \"fan\",\n  \"device\": {\n    \"id\": \"019ab283-9d4b-72e7-9f76-7733079352ed\",\n    \"name\": \"Bedroom Fan\",\n    \"type\": \"fan\",\n    \"allowed_settings\": [\"power\", \"intensity\"]\n  },\n  \"configs\": {\n    \"power\": true,\n    \"intensity\": 50,\n    \"color\": null\n  },\n  \"createdAt\": \"2025-11-24T01:00:00.000Z\",\n  \"updatedAt\": \"2025-11-24T01:00:00.000Z\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/presets",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"presets"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
