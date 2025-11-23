@@ -10,9 +10,10 @@ class Preset extends Model
     use HasUuids;
 
     protected $fillable = [
+        'device_id',
         'name',
         'type',
-        'devices',
+        'configs',
     ];
 
     public $incrementing = false;
@@ -20,6 +21,11 @@ class Preset extends Model
     protected $keyType = 'string';
 
     protected $casts = [
-        'devices' => 'array',
+        'configs' => 'array',
     ];
+
+    public function device()
+    {
+        return $this->belongsTo(Device::class);
+    }
 }

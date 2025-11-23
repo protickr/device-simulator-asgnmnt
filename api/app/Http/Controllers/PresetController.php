@@ -13,21 +13,13 @@ class PresetController extends Controller
 {
     public function index(): AnonymousResourceCollection
     {
-        $presets = Preset::latest()->paginate(15);
-
+        $presets = Preset::latest()->with('device')->paginate(15);
         return PresetResource::collection($presets);
     }
 
     public function store(StorePresetRequest $request): PresetResource
     {
-        $data = $request->validated();
-
-        $preset = Preset::create([
-            'name' => $data['name'],
-            'type' => $data['type'],
-            'devices' => $data['device'],
-        ]);
-
+        $preset = Preset::create($request->validated());
         return PresetResource::make($preset);
     }
 
@@ -38,15 +30,8 @@ class PresetController extends Controller
 
     public function update(UpdatePresetRequest $request, Preset $preset): PresetResource
     {
-        $data = $request->validated();
-
-        if (array_key_exists('device', $data)) {
-            $data['devices'] = $data['device'];
-            unset($data['device']);
-        }
-
+        $data = $request->validated(); // already converted to snake_case
         $preset->update($data);
-
         return PresetResource::make($preset);
     }
 

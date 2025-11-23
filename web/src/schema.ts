@@ -16,25 +16,28 @@ export const DeviceSchema = z.object({
   allowedSettings: z.object({
     // "property: type" [to create input forms dynamically]
     power: z.object({
-        type: z.literal("boolean"),
-    }),
-    
-    intensity: z.object({
-        type: z.literal("range"), 
-        min: z.number().min(0),
-        max: z.number().max(100),
+      type: z.literal("boolean"),
     }),
 
-    color: z.object({
+    intensity: z.object({
+      type: z.literal("range"),
+      min: z.number().min(0),
+      max: z.number().max(100),
+    }),
+
+    color: z
+      .object({
         type: z.literal("colors"),
         options: z.array(z.string()),
-    }).optional(), 
+      })
+      .optional(),
   }),
 });
 
 export const PresetSchema = z.object({
   id: z.string().nullable().optional(),
   deviceId: z.string(),
+  name: z.string().min(1).max(255),
   type: z.enum(deviceTypes), // redundant but useful for quick reference`
   device: DeviceSchema.optional(), // nested device schema for reference
   configs: z.object({
