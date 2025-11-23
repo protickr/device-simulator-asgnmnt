@@ -37,7 +37,7 @@ class UpdatePresetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'deviceId' => ['required', 'exists:devices,id'],
+            'device_id' => ['required', 'exists:devices,id'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'string', 'max:50'],
             'configs' => ['required', 'array'],

@@ -20,6 +20,8 @@ class Preset extends Model
 
     protected $keyType = 'string';
 
+    protected $with = ['device'];
+
     protected $casts = [
         'configs' => 'array',
     ];

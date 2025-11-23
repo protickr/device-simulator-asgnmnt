@@ -10,7 +10,7 @@ class Device extends Model
     use HasUuids;
     protected $fillable = ['name', 'type', 'allowed_settings'];
 
-    // Define properties for UUID primary key (required by Eloquent)
+    // Define properties for UUID primary key
     public $incrementing = false;
     protected $keyType = 'string';
 
