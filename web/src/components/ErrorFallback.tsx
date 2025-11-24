@@ -1,51 +1,17 @@
-function ErrorFallback({ error, onRetry }) {
+import styles from "./ErrorFallback.module.css";
+
+type ErrorFallbackProps = {
+  error: Error | null;
+  onRetry: () => void;
+};
+
+function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
   return (
-    <div
-      style={{
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "4.8rem",
-        backgroundColor: "#f9f9f9",
-        fontFamily: "sans-serif",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          padding: "4.8rem",
-          maxWidth: "600px",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        <h1 style={{ marginBottom: "1.6rem" }}>Something went wrong 🤷‍♀️</h1>
-        {error && (
-          <p
-            style={{
-              marginBottom: "3.2rem",
-              color: "#777",
-              fontFamily: "sans-serif",
-            }}
-          >
-            {error.message}
-          </p>
-        )}
-        <button
-          onClick={onRetry}
-          style={{
-            padding: "1rem 2rem",
-            fontSize: "1rem",
-            cursor: "pointer",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-          }}
-        >
+    <div className={styles.container}>
+      <div className={styles.inner}>
+        <h1 className={styles.heading}>Something went wrong 🤷‍♀️</h1>
+        {error && <p className={styles.paragraph}>{error.message}</p>}
+        <button onClick={onRetry} className={styles.button}>
           Try again
         </button>
       </div>
