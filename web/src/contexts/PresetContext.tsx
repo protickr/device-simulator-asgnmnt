@@ -1,55 +1,40 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import type { ReactNode } from "react";
 import toast from "react-hot-toast";
-const BASE_URL = import.meta.env.VITE_API_URL as string; // "VITE_" prefix is mandatory
-
-// preset settings stored as deviceJson in preset table
-interface PresetSettings {
-  power: boolean;
-  speed?: number;
-  brightness?: number;
-  color?: string;
-}
-
-// preset details
-export interface Preset {
-  id: string | number;
-  name: string;
-  type?: string;
-  device: PresetSettings;
-}
-
-// preset input for creating a new preset
-interface CreatePresetInput {
-  name: string;
-  type: string;
-  device: PresetSettings;
-}
+import type { PresetCreate, PresetDetails } from "../schema";
+import {
+  PresetCreateSchema,
+  PresetDetailsSchema,
+  PresetsResponseSchema,
+} from "../schema";
 
 interface PresetsState {
-  presets: Preset[];
+  presets: PresetDetails[];
   isLoading: boolean;
-  currentPreset: Preset | null;
+  currentPreset: PresetDetails | null;
   error: string;
+}
+
+interface PresetContextType {
+  presets: PresetDetails[];
+  isLoading: boolean;
+  currentPreset: PresetDetails | null;
+  error: string;
+  createPreset: (newPreset: PresetCreate) => Promise<void>;
+}
+
+interface PresetsProviderProps {
+  children: ReactNode;
 }
 
 type PresetsAction =
   | { type: "loading" }
-  | { type: "presets/loaded"; payload: Preset[] }
-  | { type: "preset/created"; payload: Preset }
-  | { type: "preset/deleted"; payload: string | number }
+  | { type: "presets/loaded"; payload: PresetDetails[] }
+  | { type: "preset/created"; payload: PresetDetails }
   | { type: "rejected"; payload: string };
 
-interface PresetsContextValue {
-  presets: Preset[];
-  isLoading: boolean;
-  currentPreset: Preset | null;
-  error: string;
-  createPreset: (newPreset: CreatePresetInput) => Promise<void>;
-  deletePreset: (id: string | number) => Promise<void>;
-}
-
-const PresetsContext = createContext<PresetsContextValue | null>(null);
+const BASE_URL = import.meta.env.VITE_API_URL as string;
+const PresetsContext = createContext<PresetContextType | null>(null);
 
 const initialState: PresetsState = {
   presets: [],
@@ -74,24 +59,12 @@ function reducer(state: PresetsState, action: PresetsAction): PresetsState {
         currentPreset: action.payload,
       };
 
-    case "preset/deleted":
-      return {
-        ...state,
-        isLoading: false,
-        presets: state.presets.filter((preset) => preset.id !== action.payload),
-        currentPreset: null,
-      };
-
     case "rejected":
       return { ...state, isLoading: false, error: action.payload };
 
     default:
       throw new Error("Unknown action type");
   }
-}
-
-interface PresetsProviderProps {
-  children: ReactNode;
 }
 
 function PresetsProvider({ children }: PresetsProviderProps) {
@@ -102,18 +75,17 @@ function PresetsProvider({ children }: PresetsProviderProps) {
 
   // Fetch all presets on mount
   useEffect(function () {
+    const abortController = new AbortController();
+
     async function fetchPresets() {
       dispatch({ type: "loading" });
 
       try {
         const res = await fetch(`${BASE_URL}/presets`);
         if (!res.ok) throw new Error(`Failed to load presets ${res.status}`);
-
-        const payload = await res.json();
-
-        const data = Array.isArray(payload) ? payload : payload.data ?? [];
-
-        dispatch({ type: "presets/loaded", payload: data });
+        const json = (await res.json()) as unknown;
+        const parsed = PresetsResponseSchema.parse({ json });
+        dispatch({ type: "presets/loaded", payload: parsed.data });
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "An error occurred";
@@ -122,39 +94,27 @@ function PresetsProvider({ children }: PresetsProviderProps) {
     }
 
     void fetchPresets();
+    return () => abortController.abort();
   }, []);
 
-  async function createPreset(newPreset: CreatePresetInput): Promise<void> {
+  async function createPreset(newPreset: PresetCreate): Promise<void> {
     dispatch({ type: "loading" });
     try {
+      // preset data validation before api request
+      const validPresetInput = PresetCreateSchema.parse(newPreset);
       const res = await fetch(`${BASE_URL}/presets`, {
         method: "POST",
-        body: JSON.stringify(newPreset),
+        body: JSON.stringify(validPresetInput),
         headers: { "Content-Type": "application/json" },
       });
+
       if (!res.ok) throw new Error(`Failed to create preset ${res.status}`);
-      const payload = (await res.json()) as Preset;
+      const json = (await res.json()) as unknown as PresetDetails;
+      const payload = PresetDetailsSchema.parse(json);
       dispatch({ type: "preset/created", payload: payload });
       toast.success("Preset saved successfully");
     } catch (err) {
       toast.error("Preset couldn't be saved");
-      const errorMessage =
-        err instanceof Error ? err.message : "An error occurred";
-      dispatch({ type: "rejected", payload: errorMessage });
-    }
-  }
-
-  async function deletePreset(id: string | number): Promise<void> {
-    dispatch({ type: "loading" });
-    try {
-      const res = await fetch(`${BASE_URL}/presets/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok && res.status !== 204) {
-        throw new Error(`Failed to delete preset (${res.status})`);
-      }
-      dispatch({ type: "preset/deleted", payload: id });
-    } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";
       dispatch({ type: "rejected", payload: errorMessage });
@@ -169,7 +129,6 @@ function PresetsProvider({ children }: PresetsProviderProps) {
         currentPreset,
         error,
         createPreset,
-        deletePreset,
       }}
     >
       {children}
@@ -177,7 +136,7 @@ function PresetsProvider({ children }: PresetsProviderProps) {
   );
 }
 
-function usePresets(): PresetsContextValue {
+function usePresets(): PresetContextType {
   const context = useContext(PresetsContext);
   if (context === null)
     throw new Error("usePresets must be used within a PresetsProvider");

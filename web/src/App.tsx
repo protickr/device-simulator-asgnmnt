@@ -1,10 +1,13 @@
+// libraries
 import { FaFan, FaLightbulb } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { Toaster } from "react-hot-toast";
 import { useState } from "react";
 
+// styles
 import "./App.css";
 
+// components
 import DeviceDropZone from "./components/DeviceDropZone";
 import DraggableDeviceItem from "./components/DragableDeviceItem";
 import Fan from "./components/Fan";
@@ -13,10 +16,12 @@ import Modal from "./components/Modal";
 import SavePresetForm from "./components/SavePresetForm";
 import ToolTip from "./components/ToolTop";
 
-// 1. Import Context Provider and Hook
+// contexts
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";
+import { DeviceProvider } from "./contexts/DeviceContext";
 import type { Preset } from "./contexts/PresetContext";
 
+// actual app entry point
 function AppContent() {
   const [isDropped, setDropped] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
@@ -29,6 +34,7 @@ function AppContent() {
   // 2. Use Context
   const { presets, isLoading } = usePresets();
 
+  // when dragged from sidebar to the edit field.
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     const type = active.id.toString().split("-")[0];
@@ -42,14 +48,11 @@ function AppContent() {
 
       if (presetData) {
         // Preset dropped: load its settings
-        const {
-          type,
-          device: { power, speed, brightness, color },
-        } = presetData;
+        const { type, device } = presetData;
         setActiveDeviceType(type as string);
-        setActiveDeviceId(active.id);
-        setIsOn(power);
-        setSpeed(speed as number);
+        setActiveDeviceId(active.id as unknown as string);
+        setIsOn(device?.power ?? false);
+        setSpeed(device?.speed ?? 0);
 
         //todo:  implement brightness and color temp for light-bulb later
       } else {
@@ -61,6 +64,7 @@ function AppContent() {
     }
   };
 
+  // clear all the states after a device-preset is removed from the edit field
   const handleClear = () => {
     setIsOn(false);
     setSpeed(0);
@@ -180,13 +184,15 @@ function AppContent() {
   );
 }
 
-// 6. Main App Component Wrapper
+// main app component wrapper
 function App() {
   return (
-    <PresetsProvider>
-      <Toaster position="top-center" reverseOrder={false} />
-      <AppContent />
-    </PresetsProvider>
+    <DeviceProvider>
+      <PresetsProvider>
+        <Toaster position="top-center" reverseOrder={false} />
+        <AppContent />
+      </PresetsProvider>
+    </DeviceProvider>
   );
 }
 
