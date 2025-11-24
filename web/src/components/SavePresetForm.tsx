@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./SavePresetForm.module.css";
 import { usePresets } from "../contexts/PresetContext";
+import type { DeviceType, PresetCreate } from "../schema";
 
 interface SavePresetFormProps {
   setIsModalOpen: (isOpen: boolean) => void;
@@ -24,19 +25,16 @@ function SavePresetForm({
     e.preventDefault();
     if (!presetName || !currentSettings.activeDeviceType) return;
 
-    const newPreset = {
+    const newPreset: PresetCreate = {
       name: presetName,
-      type: currentSettings.activeDeviceType,
-      device: {
+      type: currentSettings.activeDeviceType as DeviceType,
+      deviceId: "", //todo: set deviceId later
+      configs: {
         power: currentSettings.isOn,
-        ...(currentSettings.activeDeviceType === "fan"
-          ? {
-              speed: currentSettings.speed,
-            }
-          : {
-              brightness: currentSettings.brightness,
-              color: currentSettings.color,
-            }),
+        intensity: currentSettings.speed ?? 0, // todo: change input field to intensity for light and fan
+        ...(currentSettings.activeDeviceType === "light" && {
+          color: currentSettings.color,
+        }),
       },
     };
 

@@ -19,7 +19,7 @@ import ToolTip from "./components/ToolTop";
 // contexts
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";
 import { DeviceProvider } from "./contexts/DeviceContext";
-import type { Preset } from "./contexts/PresetContext";
+import type { PresetDetails } from "./schema";
 
 // actual app entry point
 function AppContent() {
@@ -44,16 +44,17 @@ function AppContent() {
       setShowTooltip(false);
 
       // Get the attached preset data, if any
-      const presetData = active.data.current?.preset as Preset | undefined;
+      const presetData = active.data.current?.preset as
+        | PresetDetails
+        | undefined;
 
       if (presetData) {
         // Preset dropped: load its settings
-        const { type, device } = presetData;
-        setActiveDeviceType(type as string);
+        const { type, configs }: PresetDetails = presetData;
+        setActiveDeviceType(type);
         setActiveDeviceId(active.id as unknown as string);
-        setIsOn(device?.power ?? false);
-        setSpeed(device?.speed ?? 0);
-
+        setIsOn(configs?.power ?? false);
+        setSpeed(configs?.intensity ?? 0);
         //todo:  implement brightness and color temp for light-bulb later
       } else {
         // New device dropped: set type and reset state
