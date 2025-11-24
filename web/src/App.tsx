@@ -1,17 +1,17 @@
-import { useState } from "react";
 import { FaFan, FaLightbulb } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { Toaster } from "react-hot-toast";
+import { useState } from "react";
 
 import "./App.css";
+
+import DeviceDropZone from "./components/DeviceDropZone";
+import DraggableDeviceItem from "./components/DragableDeviceItem";
 import Fan from "./components/Fan";
 import FanControl from "./components/FanControl";
-import ToolTip from "./components/ToolTop";
-import DraggableDeviceItem from "./components/DragableDeviceItem";
-import DeviceDropZone from "./components/DeviceDropZone";
-
 import Modal from "./components/Modal";
 import SavePresetForm from "./components/SavePresetForm";
+import ToolTip from "./components/ToolTop";
 
 // 1. Import Context Provider and Hook
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";

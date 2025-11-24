@@ -9,7 +9,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary
       fallbackRender={({ error, resetErrorBoundary }) => (
-        <ErrorFallback error={error} onRetry={resetErrorBoundary} />
+        <ErrorFallback error={error as Error} onRetry={resetErrorBoundary} />
       )}
       onReset={() => window.location.replace("/")}
     >
