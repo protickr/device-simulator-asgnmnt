@@ -18,9 +18,10 @@ class UpdatePresetRequest extends FormRequest
      * Modify validated data before sending to controller.
      * This is where we convert camelCase to snake_case.
      */
-    protected function passedValidation()
+
+    protected function prepareForValidation()
     {
-        // This allows you to "mutate" the validated data for the controller
+        // mutate the properties before validation
         $this->replace([
             'device_id'         => $this->deviceId ?? null,
             'name'              => $this->name,
