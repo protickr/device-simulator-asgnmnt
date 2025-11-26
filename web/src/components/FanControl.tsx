@@ -1,21 +1,30 @@
 import styles from "./FanControl.module.css";
 import ToggleButton from "./ToggleButton";
+import type { PresetDetails } from "../schema";
 
-type FanControlProps = {
+export type FanControlProps = {
   isOn: boolean;
   setIsOn: (newValue: boolean) => void;
   speed: number;
   setSpeed: (newValue: number) => void;
+  allowedSettings: PresetDetails["device"]["allowedSettings"];
 };
 
-function FanControl({ isOn, setIsOn, speed, setSpeed }: FanControlProps) {
+function FanControl({
+  isOn,
+  setIsOn,
+  speed,
+  setSpeed,
+  allowedSettings,
+}: FanControlProps) {
+  const { min: minSpeed = 0, max: maxSpeed = 100 } = allowedSettings.intensity;
+
   return (
     <div className={styles.fanControl}>
       <div className={styles.power}>
         <div>
           <span className={styles.label}>Power</span>
         </div>
-        {/* <button> power</button> */}
         <ToggleButton value={isOn} onChange={setIsOn} />
       </div>
 
@@ -29,10 +38,10 @@ function FanControl({ isOn, setIsOn, speed, setSpeed }: FanControlProps) {
 
         <input
           type="range"
-          name="speed"
-          id="speed"
-          min={0}
-          max={100}
+          name="intensity"
+          id="intensity"
+          min={+minSpeed}
+          max={+maxSpeed}
           step={1}
           className={styles.speedRange}
           value={speed}
