@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePresetRequest;
 use App\Http\Requests\UpdatePresetRequest;
 use App\Http\Resources\PresetResource;
-use App\Models\Device;
 use App\Models\Preset;
 use Illuminate\Http\Response;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -31,9 +30,8 @@ class PresetController extends Controller
 
     public function update(UpdatePresetRequest $request, Preset $preset): PresetResource
     {
-        $data = $request->validated(); // already converted to snake_case
-        $preset->update($data);
-        return PresetResource::make($preset);
+        $preset->update($request->validated());
+        return PresetResource::make($preset->load('device'));
     }
 
     public function destroy(Preset $preset): Response

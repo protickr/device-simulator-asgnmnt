@@ -20,7 +20,7 @@ class StorePresetRequest extends FormRequest
      */
     protected function prepareForValidation()
     {
-        // This allows you to "mutate" the validated data for the controller
+        // mutate the properties before validation
         $this->replace([
             'device_id'         => $this->deviceId ?? null,
             'name'              => $this->name,
