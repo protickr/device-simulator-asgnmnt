@@ -31,6 +31,22 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 3rem;
+
+  li.active {
+    filter: brightness(1.8);
+    position: relative; 
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -1.2rem;
+      top: 40%;
+      width: .7rem;
+      height: .7rem;
+      background: rgb(43, 127, 255);
+      border-radius: 50%;
+    }
+  }
 }
 
 /* Devices */
@@ -67,12 +83,14 @@
   align-items: flex-start;
   justify-content: center;
   gap: 1.6rem;
+  /* overflow-y: scroll; */
 }
 
 .preset-section>.heading {
   /* font-size: inherit;
   font-weight: inherit;
   color: inherit; */
+  position: sticky
 }
 
 ul.presets-list {
@@ -158,5 +176,12 @@ button.save-preset {
   align-items: center; 
   justify-content: space-between;
   gap: 2rem;
+
+  &{
+    p {
+      font-size: 1.6rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
 
 }

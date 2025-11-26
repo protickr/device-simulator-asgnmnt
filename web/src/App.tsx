@@ -25,7 +25,6 @@ function AppContent() {
   const [isOn, setIsOn] = useState(false);
   const [intensity, setIntensity] = useState(0);
   const [showTooltip, setShowTooltip] = useState(true);
-  const [isDropped, setDropped] = useState(false);
   const [livePreset, setLivePreset] = useState<PresetDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -52,11 +51,15 @@ function AppContent() {
       const { configs } = presetData;
 
       // update states
-      setLivePreset(presetData);
+      if (presetData.deviceId) {
+        setLivePreset(presetData);
 
-      // restore animation states
-      setIsOn(configs?.power ?? false);
-      setIntensity(configs?.intensity ?? 0);
+        // restore animation states
+        setIsOn(configs?.power ?? false);
+        setIntensity(configs?.intensity ?? 0);
+      } else {
+        setShowTooltip(true);
+      }
 
       //todo:  implement brightness and color temp for light-bulb later
     }
@@ -68,6 +71,7 @@ function AppContent() {
     setIsOn(false);
     setIntensity(0);
     setLivePreset(null);
+    setShowTooltip(true);
     // clear localStorage
   };
 
@@ -89,9 +93,12 @@ function AppContent() {
               list: devices,
               isLoading: devicesLoading,
               error: errLoadingDevices || "",
+              livePreset: livePreset,
             })}
 
-            {!livePreset && <ToolTip> Drag item from here </ToolTip>}
+            {!livePreset && showTooltip && (
+              <ToolTip> Drag item from here </ToolTip>
+            )}
 
             {/* Preset list */}
             <div className="preset-section">
@@ -102,6 +109,7 @@ function AppContent() {
                 list: presets,
                 isLoading: presetsLoading,
                 error: errLoadingPresets || "",
+                livePreset: livePreset,
               })}
             </div>
           </div>
@@ -111,22 +119,28 @@ function AppContent() {
             <div className="top-bar">
               <h1 className="sim-heading">Testing Canvas</h1>
               <div className="cta">
-                <button className="clear" onClick={handleClear}>
-                  Clear
-                </button>
-                <button
-                  className="save-preset"
-                  onClick={() => setIsModalOpen(true)}
-                  disabled={!livePreset}
-                >
-                  Save Preset
-                </button>
+                {livePreset && (
+                  <>
+                    <button className="clear" onClick={handleClear}>
+                      Clear
+                    </button>
+                    <button
+                      className="save-preset"
+                      onClick={() => setIsModalOpen(true)}
+                      disabled={!livePreset}
+                    >
+                      Save Preset
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
             <div className="sim-field">
               {livePreset === null && (
-                <DeviceDropZone>Drag anything here</DeviceDropZone>
+                <DeviceDropZone>
+                  <p>Drag anything here</p>
+                </DeviceDropZone>
               )}
 
               {/* if livePreset is not null; meaning device preset has been dropped
@@ -190,11 +204,13 @@ function renderDraggableSidebarItemList({
   list,
   isLoading,
   error,
+  livePreset,
 }: {
   listClass: string;
   itemClass: string;
   list: (PresetDetails | DeviceDetails)[];
   isLoading: boolean;
+  livePreset: PresetDetails | null;
   error?: string;
 }) {
   return (
@@ -241,6 +257,9 @@ function renderDraggableSidebarItemList({
               key={item.id}
               itemCls={itemClass}
               data={presetData}
+              isActive={
+                item.id === livePreset?.id || item.id === livePreset?.deviceId
+              }
             >
               {item.type === "fan" ? <FaFan /> : <FaLightbulb />} {item.name}
             </DraggableDeviceItem>
