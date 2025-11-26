@@ -1,8 +1,8 @@
 // libraries
 import { FaFan, FaLightbulb } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
-import { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import { useState, type ReactNode } from "react";
 
 // styles
 import "./App.css";
@@ -11,67 +11,64 @@ import "./App.css";
 import DeviceDropZone from "./components/DeviceDropZone";
 import DraggableDeviceItem from "./components/DragableDeviceItem";
 import Fan from "./components/Fan";
-import FanControl from "./components/FanControl";
 import Modal from "./components/Modal";
 import SavePresetForm from "./components/SavePresetForm";
 import ToolTip from "./components/ToolTop";
 
 // contexts
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";
-import { DeviceProvider } from "./contexts/DeviceContext";
-import type { PresetDetails } from "./schema";
+import { DeviceProvider, useDevices } from "./contexts/DeviceContext";
+import type { PresetDetails, DeviceDetails } from "./schema";
 
 // actual app entry point
 function AppContent() {
-  const [isDropped, setDropped] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(true);
-  const [activeDeviceType, setActiveDeviceType] = useState<string | null>(null);
-  const [speed, setSpeed] = useState(0);
   const [isOn, setIsOn] = useState(false);
+  const [intensity, setIntensity] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(true);
+  const [isDropped, setDropped] = useState(false);
+  const [livePreset, setLivePreset] = useState<PresetDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [activeDeviceId, setActiveDeviceId] = useState<string | null>(null);
 
   // 2. Use Context
-  const { presets, isLoading } = usePresets();
+  const {
+    presets,
+    isLoading: presetsLoading,
+    error: errLoadingPresets,
+  } = usePresets();
 
-  // when dragged from sidebar to the edit field.
+  const {
+    devices,
+    isLoading: devicesLoading,
+    error: errLoadingDevices,
+  } = useDevices();
+
+  // Preset dropped: load its configs
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    const type = active.id.toString().split("-")[0];
 
     if (over?.id === "drop-area") {
-      setDropped(true);
-      setShowTooltip(false);
+      // Get the attached preset data
+      const presetData = active.data.current as PresetDetails;
+      const { configs } = presetData;
 
-      // Get the attached preset data, if any
-      const presetData = active.data.current?.preset as
-        | PresetDetails
-        | undefined;
+      // update states
+      setLivePreset(presetData);
 
-      if (presetData) {
-        // Preset dropped: load its settings
-        const { type, configs }: PresetDetails = presetData;
-        setActiveDeviceType(type);
-        setActiveDeviceId(active.id as unknown as string);
-        setIsOn(configs?.power ?? false);
-        setSpeed(configs?.intensity ?? 0);
-        //todo:  implement brightness and color temp for light-bulb later
-      } else {
-        // New device dropped: set type and reset state
-        setActiveDeviceType(type);
-        setIsOn(false);
-        setSpeed(0);
-      }
+      // restore animation states
+      setIsOn(configs?.power ?? false);
+      setIntensity(configs?.intensity ?? 0);
+
+      //todo:  implement brightness and color temp for light-bulb later
     }
   };
 
-  // clear all the states after a device-preset is removed from the edit field
+  // clear all the states after a
+  // device-preset is removed from the edit field
   const handleClear = () => {
     setIsOn(false);
-    setSpeed(0);
-    setDropped(false);
-    setShowTooltip(true);
-    setActiveDeviceType(null);
+    setIntensity(0);
+    setLivePreset(null);
+    // clear localStorage
   };
 
   return (
@@ -84,44 +81,28 @@ function AppContent() {
         <div className="app">
           {/* sidebar starts */}
           <div className="sidebar">
+            {/* Device list */}
             <h1>Devices</h1>
-            <ul className="device-list">
-              <DraggableDeviceItem type="fan" itemCls="list-item">
-                {<FaFan />} Fan
-              </DraggableDeviceItem>
+            {renderDraggableSidebarItemList({
+              listClass: "device-list",
+              itemClass: "list-item",
+              list: devices,
+              isLoading: devicesLoading,
+              error: errLoadingDevices || "",
+            })}
 
-              <DraggableDeviceItem type="light" itemCls="list-item">
-                {<FaLightbulb />} Light
-              </DraggableDeviceItem>
-            </ul>
+            {!livePreset && <ToolTip> Drag item from here </ToolTip>}
 
-            {showTooltip && <ToolTip />}
-
+            {/* Preset list */}
             <div className="preset-section">
               <h1 className="heading">Saved Presets</h1>
-
-              {/* 4. Render List from Context */}
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                <ul className="presets-list">
-                  {presets.length === 0 ? (
-                    <li className="presets-item">Nothing saved yet</li>
-                  ) : (
-                    presets.map((preset) => (
-                      <DraggableDeviceItem
-                        key={preset.id}
-                        type={preset.type as string}
-                        itemCls="presets-item"
-                        data={{ preset: preset }}
-                      >
-                        {preset.type === "fan" ? <FaFan /> : <FaLightbulb />}
-                        {preset.name}
-                      </DraggableDeviceItem>
-                    ))
-                  )}
-                </ul>
-              )}
+              {renderDraggableSidebarItemList({
+                listClass: "presets-list",
+                itemClass: "presets-item",
+                list: presets,
+                isLoading: presetsLoading,
+                error: errLoadingPresets || "",
+              })}
             </div>
           </div>
           {/* sidebar ends */}
@@ -129,42 +110,54 @@ function AppContent() {
           <div className="action-area">
             <div className="top-bar">
               <h1 className="sim-heading">Testing Canvas</h1>
-              {activeDeviceId && (
-                <div className="cta">
-                  <button className="clear" onClick={handleClear}>
-                    Clear
-                  </button>
-                  <button
-                    className="save-preset"
-                    onClick={() => setIsModalOpen(true)}
-                    disabled={!isDropped}
-                  >
-                    Save Preset
-                  </button>
-                </div>
-              )}
+              <div className="cta">
+                <button className="clear" onClick={handleClear}>
+                  Clear
+                </button>
+                <button
+                  className="save-preset"
+                  onClick={() => setIsModalOpen(true)}
+                  disabled={!livePreset}
+                >
+                  Save Preset
+                </button>
+              </div>
             </div>
 
             <div className="sim-field">
-              {!isDropped ? (
+              {livePreset === null && (
                 <DeviceDropZone>Drag anything here</DeviceDropZone>
-              ) : activeDeviceType === "fan" ? (
-                <>
+              )}
+
+              {/* if livePreset is not null; meaning device preset has been dropped
+              now or before refresh */}
+              {livePreset?.type?.length && livePreset.type === "fan" && (
+                <Fan
+                  isOn={isOn}
+                  setIsOn={setIsOn}
+                  speed={intensity}
+                  setSpeed={setIntensity}
+                  allowedSettings={livePreset.device.allowedSettings}
+                ></Fan>
+              )}
+
+              {/* 
+              { livePreset?.type?.length && livePreset.type === "light"  && 
+              <>
                   <div className="device-area">
-                    <Fan power={isOn} speed={speed}></Fan>
+                    <Light power={isOn} brightness={intensity} color={color}></Light>
                   </div>
                   <div className="controls-area">
-                    <FanControl
+                    <LightControl
                       isOn={isOn}
                       setIsOn={setIsOn}
-                      speed={speed}
-                      setSpeed={setSpeed}
-                    ></FanControl>
+                      brightness={intensity}
+                      setBrightness={setIntensity}
+                      allowedSettings={livePreset.device.allowedSettings}
+                    ></LightControl>
                   </div>
-                </>
-              ) : (
-                "Not Implemented Yet"
-              )}
+                </> 
+                } */}
             </div>
           </div>
         </div>
@@ -177,13 +170,87 @@ function AppContent() {
       >
         <SavePresetForm
           setIsModalOpen={setIsModalOpen}
-          // 5. Pass current app state to the form
-          currentSettings={{ activeDeviceType, speed, isOn }}
+          currentSettings={{
+            type: livePreset?.type as string,
+            deviceId: livePreset?.device.id as string,
+            isOn,
+            intensity,
+            // color: null,
+          }}
         />
       </Modal>
     </>
   );
 }
+
+//DRY function to render both device and preset lists in the sidebar
+function renderDraggableSidebarItemList({
+  listClass,
+  itemClass,
+  list,
+  isLoading,
+  error,
+}: {
+  listClass: string;
+  itemClass: string;
+  list: (PresetDetails | DeviceDetails)[];
+  isLoading: boolean;
+  error?: string;
+}) {
+  return (
+    <>
+      <ul className={listClass}>
+        {/* still loading */}
+        {isLoading && (
+          <li className={itemClass}>
+            <p>Loading...</p>
+          </li>
+        )}
+
+        {/* empty list */}
+        {list?.length < 1 && (
+          <li className={itemClass}>
+            <p>There is no item</p>
+          </li>
+        )}
+
+        {error?.length ? void toast.error(error) : null}
+
+        {/* render list if not undefined */}
+        {list?.map((item: DeviceDetails | PresetDetails): ReactNode => {
+          /* unifying operational data: create a draft preset from parent device */
+          const isPreset = "configs" in item;
+          const presetData = isPreset
+            ? item
+            : {
+                id: null,
+                name: "",
+                configs: {
+                  power: false,
+                  intensity: 0,
+                  color: null,
+                },
+
+                deviceId: item.id,
+                type: item.type,
+                device: item,
+              };
+
+          return (
+            <DraggableDeviceItem
+              key={item.id}
+              itemCls={itemClass}
+              data={presetData}
+            >
+              {item.type === "fan" ? <FaFan /> : <FaLightbulb />} {item.name}
+            </DraggableDeviceItem>
+          );
+        })}
+      </ul>
+    </>
+  );
+}
+
 
 // main app component wrapper
 function App() {
@@ -198,3 +265,17 @@ function App() {
 }
 
 export default App;
+
+/**
+ * anything dropped in the edit field is a preset, there is no exception 
+ * we can either save a new preset => presetId === null => save => presetId generated
+ * or load an existing preset => presetId === uuid() => load => save => update preset
+ * 
+ * dragging a device from the sidebar creates a new preset with presetId === null
+ * dragging a preset from the sidebar loads an existing preset with presetId === uuid()
+ * 
+ * In both cases, the edit field works with presets only.
+ * and we send a "preset" to the "data" property of the draggable item
+ * 
+ * currentPreset => might or might not have an ID or we can generate a temporary one on the client side
+ */

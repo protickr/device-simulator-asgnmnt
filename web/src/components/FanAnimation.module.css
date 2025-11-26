@@ -1,0 +1,65 @@
+.fan-container {
+    position: relative;
+    width: 32rem;
+    height: 32rem;
+    /* animation: spin 1s linear infinite;
+    animation-play-state: paused */
+}
+
+.blade {
+    position: absolute;
+    width: 13.4rem;
+    height: 5.6rem;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3), inset 0px 2px 4px rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, #4A5568 0%, #2D3748 30%, #1A202C 70%, #0F1419 100%);
+    border-radius: 0px 1.67772e+07px 1.67772e+07px 0px;
+}
+
+.blade-1 {
+    left: 18.8rem;
+    top: 13.1rem;
+}
+
+.blade-2 {
+    left: 9.33rem;
+    top: 22.7rem;
+    transform: rotate(-270deg);
+}
+
+.blade-3 {
+    left: 0px;
+    top: 13.1rem;
+    transform: rotate(180deg);
+}
+
+.blade-4 {
+    left: 9.3rem;
+    top: 3.7rem;
+    transform: rotate(-90deg);
+}
+
+/* motor */
+.motor {
+    padding: 1.2rem 1.2rem 4px;
+    width: 8.0rem;
+    height: 8.0rem;
+    position: absolute;
+    left: 12.0rem;
+    top: 12.0rem;
+    background: linear-gradient(135deg, #4A5565 0%, #1E2939 100%);
+    border: 4px solid #364153;
+    box-shadow: 0px 2.5rem 5rem -1.2rem rgba(0, 0, 0, 0.25);
+    border-radius: 1.67772e+07px;
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        /* transform: rotate(360deg * (var(--fan-speed) / 100) * var(---fan-is-on)); */
+        transform: rotate(360deg);
+    }
+}

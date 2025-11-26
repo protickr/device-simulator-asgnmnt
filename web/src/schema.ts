@@ -32,13 +32,12 @@ export const DeviceCreateSchema = z.object({
       .optional(),
   }),
 });
-
 export const DeviceDetailsSchema = DeviceCreateSchema.extend({
   id: z.string(),
 });
 
 export const PresetCreateSchema = z.object({
-  id: z.string().nullable().optional(),
+  id: z.string().optional(),
   deviceId: z.string(),
   name: z.string().min(1).max(255),
   type: z.enum(deviceTypes),
@@ -48,7 +47,6 @@ export const PresetCreateSchema = z.object({
     color: z.string().nullable().optional(),
   }),
 });
-
 export const PresetDetailsSchema = PresetCreateSchema.extend({
   device: DeviceDetailsSchema,
 });
@@ -60,7 +58,6 @@ export const DevicesResponseSchema = z.object({
 export const PresetsResponseSchema = z.object({
   data: z.array(PresetDetailsSchema),
 });
-
 // 2. Infer the TypeScript type from the schema
 // to use in compile-time checks
 export type DeviceCreate = z.infer<typeof DeviceCreateSchema>;

@@ -2,24 +2,18 @@ import { useDraggable } from "@dnd-kit/core";
 import React, { useId } from "react";
 
 type DraggableDeviceItemProps = {
-  type: string;
+  data: object;
+  itemCls: string;
   children: React.ReactNode;
-  itemCls?: string;
-  data?: object;
 };
 
 function DraggableDeviceItem({
-  type,
   children,
   itemCls,
   data,
 }: DraggableDeviceItemProps) {
   const id = useId();
-
-  const { attributes, listeners, setNodeRef } = useDraggable({
-    id: `${type}-${id}`,
-    data: data,
-  });
+  const { attributes, listeners, setNodeRef } = useDraggable({ id, data });
 
   return (
     <li

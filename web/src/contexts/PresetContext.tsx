@@ -7,6 +7,7 @@ import {
   PresetDetailsSchema,
   PresetsResponseSchema,
 } from "../schema";
+import { ZodError } from "zod";
 
 interface PresetsState {
   presets: PresetDetails[];
@@ -84,12 +85,22 @@ function PresetsProvider({ children }: PresetsProviderProps) {
         const res = await fetch(`${BASE_URL}/presets`);
         if (!res.ok) throw new Error(`Failed to load presets ${res.status}`);
         const json = (await res.json()) as unknown;
-        const parsed = PresetsResponseSchema.parse({ json });
+        // "zod" validation of response data, in the runtime
+        const parsed = PresetsResponseSchema.parse(json);
         dispatch({ type: "presets/loaded", payload: parsed.data });
       } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An error occurred";
-        dispatch({ type: "rejected", payload: errorMessage });
+        const errors: string[] = [];
+        if (err instanceof ZodError) {
+          const messages = err.issues.map(
+            (issue) => `${String(issue?.path?.at(-1))}: ${issue.message}`
+          );
+          errors.push(...messages);
+        } else if (err instanceof Error) {
+          errors.push(err.message);
+        } else {
+          errors.push("An unknown error occurred");
+        }
+        dispatch({ type: "rejected", payload: errors.join(", ") });
       }
     }
 
@@ -114,10 +125,19 @@ function PresetsProvider({ children }: PresetsProviderProps) {
       dispatch({ type: "preset/created", payload: payload });
       toast.success("Preset saved successfully");
     } catch (err) {
-      toast.error("Preset couldn't be saved");
-      const errorMessage =
-        err instanceof Error ? err.message : "An error occurred";
-      dispatch({ type: "rejected", payload: errorMessage });
+      const errors: string[] = [];
+      if (err instanceof ZodError) {
+        const messages = err.issues.map(
+          (issue) => `${String(issue?.path?.at(-1))}: ${issue.message}`
+        );
+        errors.push(...messages);
+      } else if (err instanceof Error) {
+        errors.push(err.message);
+      } else {
+        errors.push("Preset couldn't be saved");
+      }
+
+      dispatch({ type: "rejected", payload: errors.join(", ") });
     }
   }
 

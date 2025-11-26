@@ -159,21 +159,4 @@ button.save-preset {
   justify-content: space-between;
   gap: 2rem;
 
-  /* place-items: center; */
-}
-
-
-.device-area {
-  position: relative; 
-  margin-top: 4rem;
-}
-
-.controls-area {
-  border: 1px solid #364153;
-  border-radius: 1.4rem;
-  padding: 2rem;
-  background: rgba(30, 41, 57, 0.5);
-  align-self: center;
-
-  display: flex;
 }

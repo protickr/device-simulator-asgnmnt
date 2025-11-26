@@ -18,7 +18,10 @@ class PresetResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'type' => $this->type,
-            'device' => $this->device, // loading eagerly
+            // 'device' => $this->device, // loading eagerly
+            'device' => new DeviceResource($this->whenLoaded('device')),
+            'deviceId' => $this->device_id,
+            'configs' => $this->configs,
             'createdAt' => $this->created_at?->toISOString(),
             'updatedAt' => $this->updated_at?->toISOString(),
         ];

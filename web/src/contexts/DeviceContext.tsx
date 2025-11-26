@@ -18,6 +18,8 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const fetchDevices = async () => {
       try {
         setIsLoading(true);
@@ -34,6 +36,7 @@ export function DeviceProvider({ children }: { children: ReactNode }) {
     };
 
     void fetchDevices();
+    return () => abortController.abort();
   }, []);
 
   return (
