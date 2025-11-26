@@ -1,6 +1,13 @@
 // libraries
 import { FaFan, FaLightbulb } from "react-icons/fa";
-import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -48,6 +55,16 @@ function AppContent() {
     isLoading: devicesLoading,
     error: errLoadingDevices,
   } = useDevices();
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    // optional: prevents accidental drag on slight touch
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 8, // must move 8px before drag starts
+      },
+    })
+  );
 
   // Preset dropped: load its configs
   const handleDragEnd = (event: DragEndEvent) => {
@@ -98,6 +115,7 @@ function AppContent() {
       <DndContext
         onDragStart={() => setShowTooltip(false)}
         onDragEnd={handleDragEnd}
+        sensors={sensors}
       >
         <div className="app">
           {/* sidebar starts */}
@@ -202,6 +220,7 @@ function AppContent() {
         <SavePresetForm
           setIsModalOpen={setIsModalOpen}
           // setLivePreset={setLivePreset}
+          prevPresetName={livePreset?.name ?? ""}
           currentSettings={{
             type: livePreset?.type as string,
             deviceId: livePreset?.device.id as string,
