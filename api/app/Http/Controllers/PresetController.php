@@ -21,12 +21,12 @@ class PresetController extends Controller
     public function store(StorePresetRequest $request): PresetResource
     {
         $preset = Preset::create($request->validated());
-        return PresetResource::make($preset);
+        return PresetResource::make($preset->load('device'));
     }
 
     public function show(Preset $preset): PresetResource
     {
-        return PresetResource::make($preset);
+        return PresetResource::make($preset->load('device'));
     }
 
     public function update(UpdatePresetRequest $request, Preset $preset): PresetResource

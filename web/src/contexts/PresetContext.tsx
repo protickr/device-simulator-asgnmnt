@@ -120,8 +120,8 @@ function PresetsProvider({ children }: PresetsProviderProps) {
       });
 
       if (!res.ok) throw new Error(`Failed to create preset ${res.status}`);
-      const json = (await res.json()) as unknown as PresetDetails;
-      const payload = PresetDetailsSchema.parse(json);
+      const json = (await res.json()) as unknown as { data: PresetDetails };
+      const payload = PresetDetailsSchema.parse(json.data);
       dispatch({ type: "preset/created", payload: payload });
       toast.success("Preset saved successfully");
     } catch (err) {
