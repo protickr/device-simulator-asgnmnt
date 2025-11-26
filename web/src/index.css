@@ -13,7 +13,7 @@
 
    box-sizing: border-box;
    /* 1rem = 10px; 10/16 * 100 = 62.5 */
-   font-size: 62.5%;    
+   font-size: 62.5%;
    font-synthesis: none;
    text-rendering: optimizeLegibility;
    -webkit-font-smoothing: antialiased;
@@ -41,17 +41,29 @@
    color: white;
  }
 
- /* 
- desktop first approach
- breakpoints,
-  68.75em =>  very large 
-  56.25em =>  large 
-  37.5em =>   medium 
-  31.25em =>  small 
 
-$bp-largest: 75em;  // 1200px / 16px    = 75em;
-$bp-large: 62.5em;  // 1000px / 16px    = 62.5em;
-$bp-medium: 50em;   // 800px / 16px     = 50em;
-$bp-small: 37.5em;  // 600px / 16px     = 37.5em;
-*/
+ @media (max-width: 31.25em) {
+      body {
+      font-size: 7px;
+    }
+
+  .app,
+  .sidebar,
+  .sim-area, 
+  .sim-field,
+  .action-area {
+    padding: 8px !important; 
+    gap: 8px !important;    
+  }
+
+  /* Reduce sidebar width to 70% of its original */
+  .sidebar {
+    flex: 0 1 18rem !important;
+    gap: 1rem !important;
+  }
+}
+
+
+/* ReactJS's css modules have precedence over global styles */
+/* Refactor to use some other approach other than !important later */
 

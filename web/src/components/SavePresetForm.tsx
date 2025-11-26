@@ -8,6 +8,7 @@ interface SavePresetFormProps {
   setLivePreset?: (
     preset: (PresetCreate & { device: DeviceDetails }) | null
   ) => void;
+  prevPresetName: string;
   currentSettings: {
     deviceId: string;
     type: string | null;
@@ -20,9 +21,10 @@ interface SavePresetFormProps {
 
 function SavePresetForm({
   setIsModalOpen,
+  prevPresetName,
   currentSettings,
 }: SavePresetFormProps) {
-  const [presetName, setPresetName] = useState("");
+  const [presetName, setPresetName] = useState(prevPresetName || "");
   const { createPreset, updatePreset, isLoading } = usePresets(); // Use Context
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,7 +55,7 @@ function SavePresetForm({
 
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setPresetName("");
+    // setPresetName("");
     setIsModalOpen(false);
   };
 
