@@ -2,7 +2,7 @@
 import { FaFan, FaLightbulb } from "react-icons/fa";
 import { DndContext, type DragEndEvent } from "@dnd-kit/core";
 import toast, { Toaster } from "react-hot-toast";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 // styles
 import "./App.css";
@@ -22,11 +22,19 @@ import type { PresetDetails, DeviceDetails } from "./schema";
 
 // actual app entry point
 function AppContent() {
-  const [isOn, setIsOn] = useState(false);
-  const [intensity, setIntensity] = useState(0);
   const [showTooltip, setShowTooltip] = useState(true);
-  const [livePreset, setLivePreset] = useState<PresetDetails | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [livePreset, setLivePreset] = useState<PresetDetails | null>(() => {
+    const saved = localStorage.getItem("livePreset");
+    return saved ? (JSON.parse(saved) as PresetDetails) : null;
+  });
+
+  // ? could refactor into a single state object
+  const [isOn, setIsOn] = useState<boolean>(livePreset?.configs.power || false);
+  const [intensity, setIntensity] = useState<number>(
+    livePreset?.configs.intensity || 0
+  );
 
   // 2. Use Context
   const {
@@ -74,6 +82,16 @@ function AppContent() {
     setShowTooltip(true);
     // clear localStorage
   };
+
+  useEffect(() => {
+    if (livePreset) {
+      localStorage.setItem("livePreset", JSON.stringify(livePreset));
+      // setIsOn(livePreset?.configs.power ?? false);
+      // setIntensity(livePreset?.configs.intensity ?? 0);
+    } else {
+      localStorage.removeItem("livePreset");
+    }
+  }, [livePreset]);
 
   return (
     <>
