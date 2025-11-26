@@ -73,25 +73,24 @@ function AppContent() {
     }
   };
 
-  // clear all the states after a
-  // device-preset is removed from the edit field
+  // clear all the states after a device-preset is removed from the edit field
   const handleClear = () => {
     setIsOn(false);
     setIntensity(0);
     setLivePreset(null);
     setShowTooltip(true);
-    // clear localStorage
   };
 
   useEffect(() => {
     if (livePreset) {
-      localStorage.setItem("livePreset", JSON.stringify(livePreset));
-      // setIsOn(livePreset?.configs.power ?? false);
-      // setIntensity(livePreset?.configs.intensity ?? 0);
+      localStorage.setItem(
+        "livePreset",
+        JSON.stringify({ ...livePreset, configs: { power: isOn, intensity } })
+      );
     } else {
       localStorage.removeItem("livePreset");
     }
-  }, [livePreset]);
+  }, [livePreset, isOn, intensity]);
 
   return (
     <>
@@ -198,16 +197,18 @@ function AppContent() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Save Preset"
+        title={`${livePreset?.id ? "Update" : "Save"} Preset`}
       >
         <SavePresetForm
           setIsModalOpen={setIsModalOpen}
+          // setLivePreset={setLivePreset}
           currentSettings={{
             type: livePreset?.type as string,
             deviceId: livePreset?.device.id as string,
             isOn,
+            currentPresetId: livePreset?.id ?? null,
             intensity,
-            // color: null,
+            color: undefined,
           }}
         />
       </Modal>

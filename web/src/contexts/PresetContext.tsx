@@ -22,6 +22,7 @@ interface PresetContextType {
   currentPreset: PresetDetails | null;
   error: string;
   createPreset: (newPreset: PresetCreate) => Promise<void>;
+  updatePreset: (presetData: PresetCreate, presetId: string) => Promise<void>;
 }
 
 interface PresetsProviderProps {
@@ -32,6 +33,7 @@ type PresetsAction =
   | { type: "loading" }
   | { type: "presets/loaded"; payload: PresetDetails[] }
   | { type: "preset/created"; payload: PresetDetails }
+  | { type: "preset/updated"; payload: PresetDetails }
   | { type: "rejected"; payload: string };
 
 const BASE_URL = import.meta.env.VITE_API_URL as string;
@@ -57,6 +59,17 @@ function reducer(state: PresetsState, action: PresetsAction): PresetsState {
         ...state,
         isLoading: false,
         presets: [...state.presets, action.payload],
+        currentPreset: action.payload,
+      };
+
+    case "preset/updated":
+      return {
+        ...state,
+        isLoading: false,
+        presets: [
+          ...state.presets.filter((preset) => preset.id !== action.payload.id),
+          action.payload,
+        ],
         currentPreset: action.payload,
       };
 
@@ -141,6 +154,42 @@ function PresetsProvider({ children }: PresetsProviderProps) {
     }
   }
 
+  async function updatePreset(
+    presetData: PresetCreate,
+    presetId: string
+  ): Promise<void> {
+    dispatch({ type: "loading" });
+    try {
+      // preset data validation before api request
+      const validPresetInput = PresetCreateSchema.parse(presetData);
+      const res = await fetch(`${BASE_URL}/presets/${presetId}`, {
+        method: "PUT",
+        body: JSON.stringify(validPresetInput),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error(`Failed to update preset ${res.status}`);
+      const json = (await res.json()) as unknown as { data: PresetDetails };
+      const payload = PresetDetailsSchema.parse(json.data);
+      dispatch({ type: "preset/updated", payload: payload });
+      toast.success("Preset updated successfully");
+    } catch (err) {
+      const errors: string[] = [];
+      if (err instanceof ZodError) {
+        const messages = err.issues.map(
+          (issue) => `${String(issue?.path?.at(-1))}: ${issue.message}`
+        );
+        errors.push(...messages);
+      } else if (err instanceof Error) {
+        errors.push(err.message);
+      } else {
+        errors.push("Preset couldn't be updated");
+      }
+
+      dispatch({ type: "rejected", payload: errors.join(", ") });
+    }
+  }
+
   return (
     <PresetsContext.Provider
       value={{
@@ -149,6 +198,7 @@ function PresetsProvider({ children }: PresetsProviderProps) {
         currentPreset,
         error,
         createPreset,
+        updatePreset,
       }}
     >
       {children}

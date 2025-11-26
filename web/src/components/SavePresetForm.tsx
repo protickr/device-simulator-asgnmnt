@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import styles from "./SavePresetForm.module.css";
 import { usePresets } from "../contexts/PresetContext";
-import type { DeviceType, PresetCreate } from "../schema";
+import type { DeviceDetails, DeviceType, PresetCreate } from "../schema";
 
 interface SavePresetFormProps {
   setIsModalOpen: (isOpen: boolean) => void;
+  setLivePreset?: (
+    preset: (PresetCreate & { device: DeviceDetails }) | null
+  ) => void;
   currentSettings: {
     deviceId: string;
     type: string | null;
     isOn: boolean;
+    currentPresetId: string | null;
     intensity?: number;
     color?: string;
   };
@@ -19,7 +23,7 @@ function SavePresetForm({
   currentSettings,
 }: SavePresetFormProps) {
   const [presetName, setPresetName] = useState("");
-  const { createPreset, isLoading } = usePresets(); // Use Context
+  const { createPreset, updatePreset, isLoading } = usePresets(); // Use Context
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +42,12 @@ function SavePresetForm({
       },
     };
 
-    await createPreset(newPreset);
+    if (currentSettings.currentPresetId) {
+      await updatePreset(newPreset, currentSettings.currentPresetId);
+    } else {
+      await createPreset(newPreset);
+    }
+
     setIsModalOpen(false);
   };
 
@@ -75,7 +84,9 @@ function SavePresetForm({
           }}
           disabled={isLoading}
         >
-          {isLoading ? "Saving..." : "Save Preset"}
+          {isLoading
+            ? "Saving..."
+            : `${currentSettings.currentPresetId ? "Update" : "Save"} Preset`}
         </button>
       </div>
     </>
