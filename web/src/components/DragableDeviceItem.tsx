@@ -14,8 +14,6 @@ function DraggableDeviceItem({
   data,
   isActive,
 }: DraggableDeviceItemProps) {
-  console.log("🚀 ~ DraggableDeviceItem ~ isActive:", isActive);
-
   const id = useId();
   const { attributes, listeners, setNodeRef } = useDraggable({ id, data });
 

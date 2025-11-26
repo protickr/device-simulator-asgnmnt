@@ -147,7 +147,7 @@ function AppContent() {
                       onClick={() => setIsModalOpen(true)}
                       disabled={!livePreset}
                     >
-                      Save Preset
+                      {livePreset.id ? "Update" : "Save"} Preset
                     </button>
                   </>
                 )}
