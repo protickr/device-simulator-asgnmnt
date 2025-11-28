@@ -11,7 +11,7 @@ function DeviceDropZone({ children }: DeviceDropZoneProps) {
   });
 
   return (
-    <div className={styles["drop-area"]} id="drop-area" ref={setNodeRef}>
+    <div ref={setNodeRef} className={styles["device-drop-zone"]}>
       {children}
     </div>
   );
