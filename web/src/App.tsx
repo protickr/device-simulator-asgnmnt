@@ -22,12 +22,14 @@ import Fan from "./components/Fan";
 import Modal from "./components/Modal";
 import SavePresetForm from "./components/SavePresetForm";
 import ToolTip from "./components/ToolTop";
+import EmptyDropArea from "./components/EmptyDropArea";
+import Light from "./components/Light";
 
 // contexts
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";
 import { DeviceProvider, useDevices } from "./contexts/DeviceContext";
+
 import type { PresetDetails, DeviceDetails } from "./schema";
-import EmptyDropArea from "./components/EmptyDropArea";
 
 // actual app entry point
 function AppContent() {
@@ -44,6 +46,7 @@ function AppContent() {
   const [intensity, setIntensity] = useState<number>(
     livePreset?.configs.intensity || 0
   );
+  const [color, setColor] = useState<string>(livePreset?.configs.color || "");
 
   // 2. Use Context
   const {
@@ -75,11 +78,6 @@ function AppContent() {
     if (over?.id === "drop-area") {
       // Get the attached preset data
       const presetData = active.data.current as PresetDetails;
-      console.log(
-        "🚀 ~ handleDragEnd ~ active.data.current:",
-        active.data.current
-      );
-
       const { configs } = presetData;
 
       // update states
@@ -89,11 +87,10 @@ function AppContent() {
         // restore animation states
         setIsOn(configs?.power ?? false);
         setIntensity(configs?.intensity ?? 0);
+        setColor(configs?.color ?? "");
       } else {
         setShowTooltip(true);
       }
-
-      //todo:  implement brightness and color temp for light-bulb later
     }
   };
 
@@ -101,6 +98,7 @@ function AppContent() {
   const handleClear = () => {
     setIsOn(false);
     setIntensity(0);
+    setColor("");
     setLivePreset(null);
     setShowTooltip(true);
   };
@@ -109,12 +107,15 @@ function AppContent() {
     if (livePreset) {
       localStorage.setItem(
         "livePreset",
-        JSON.stringify({ ...livePreset, configs: { power: isOn, intensity } })
+        JSON.stringify({
+          ...livePreset,
+          configs: { power: isOn, intensity, color },
+        })
       );
     } else {
       localStorage.removeItem("livePreset");
     }
-  }, [livePreset, isOn, intensity]);
+  }, [livePreset, isOn, intensity, color]);
 
   return (
     <>
@@ -201,30 +202,25 @@ function AppContent() {
 
                 {livePreset?.type?.length && livePreset.type === "light" && (
                   <>
-                    {/* 
-                      todo: move to Light component later
-                    <div className="device-area">
-                      <Light
-                        power={isOn}
-                        brightness={intensity}
-                        color={color}
-                      />
-                    </div>
-                    <div className="controls-area">
-                      <LightControl
-                        isOn={isOn}
-                        setIsOn={setIsOn}
-                        brightness={intensity}
-                        setBrightness={setIntensity}
-                        allowedSettings={livePreset.device.allowedSettings}
-                      />
-                    </div> */}
+                    <Light
+                      isOn={isOn}
+                      setIsOn={setIsOn}
+                      brightness={intensity}
+                      setBrightness={setIntensity}
+                      color={color}
+                      setColor={setColor}
+                      allowedSettings={livePreset.device.allowedSettings}
+                    />
+                  </>
+                )}
 
+                {livePreset?.type?.length &&
+                  livePreset.type !== "fan" &&
+                  livePreset.type !== "light" && (
                     <EmptyDropArea>
                       <p>Not implemented yet</p>
                     </EmptyDropArea>
-                  </>
-                )}
+                  )}
               </DeviceDropZone>
             </div>
           </div>
@@ -246,7 +242,7 @@ function AppContent() {
             isOn,
             currentPresetId: livePreset?.id ?? null,
             intensity,
-            color: undefined,
+            color,
           }}
         />
       </Modal>

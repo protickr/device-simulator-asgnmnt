@@ -1,0 +1,180 @@
+/* 
+container: [ stump: [ tip, mid:[bar1, bar2, bar3, bar4] ] , bulb: [ innerBar, innerSquare] ]
+container
+└── stump
+│   ├── tip
+│   └── mid
+│       ├── bar1
+│       ├── bar2
+│       ├── bar3
+│       └── bar4
+└── bulb
+    ├── innerBar
+    └── innerSquare 
+*/
+.device-area {
+    position: relative;
+    margin-top: 4rem;
+}
+
+.controls-area {
+    border: 1px solid rgb(54, 65, 83);
+    border-radius: 1.4rem;
+    padding: 2rem;
+    background: rgba(30, 41, 57, 0.5);
+    align-self: center;
+
+    display: flex;
+}
+
+/* parent light container */
+.light-container {
+    --bulb-rgb: 255, 229, 180;
+    --bulb-brightness: 1;
+
+    position: relative;
+    width: 32rem;
+    height: 32rem;
+    border-radius: 9999px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    transition: all 0.6s ease;
+
+    /* the background halo of the light */
+    &::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        background: rgba(255, 229, 180, 0);
+        /* so no effect visible but used for transition */
+        filter: blur(6.4rem);
+        transition: background-color 0.6s ease, filter 0.6s ease;
+    }
+
+    &.power-off::before {
+        background: rgba(var(--bulb-rgb), 0);
+        filter: blur(0rem);
+    }
+
+    &.power-on::before {
+        /* Uses --bulb-brightness to control opacity */
+        background-color: rgba(var(--bulb-rgb), calc(var(--bulb-brightness) * 1));
+        filter: blur(calc(4rem + (var(--bulb-brightness) * 5rem)));
+    }
+}
+
+
+/* light er matha */
+.light-stump {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    .light-stump-tip {
+        width: 6.4rem;
+        height: 1.2rem;
+        background: linear-gradient(180deg, rgb(74, 85, 101) 0%, rgb(54, 65, 83) 100%);
+        border-radius: .6rem .6rem 0rem 0rem;
+    }
+
+    .light-stump-mid {
+        width: 8.0rem;
+        height: 1.6rem;
+        display: flex;
+
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .light-stump-mid-bar {
+            width: 8.0rem;
+            height: .4rem;
+
+            background: rgb(54, 65, 83);
+            border-bottom: .1rem solid rgb(74, 85, 101);
+            border-radius: 0rem;
+        }
+    }
+}
+
+/* thy spiritual light body */
+.light-bulb {
+    /* base light bulb  */
+    width: 12.8rem;
+    height: 16rem;
+    border-radius: 1.67772e+07px;
+    transition: background 0.6s ease, box-shadow 0.6s ease;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    /* base inner square */
+    .inner-square {
+        width: 4.8rem;
+        height: 6.4rem;
+        border-radius: 9999px;
+        transition: opacity 0.6s ease, filter 0.6s ease;
+
+        position: absolute;
+        top: 20%;
+        left: 20%;
+    }
+
+    /* base inner bar */
+    .inner-bar {
+        width: .48rem;
+        height: 6.4rem;
+        border-radius: 9999px;
+        transition: opacity 0.6s ease, box-shadow 0.6s ease;
+    }
+
+    /* power off: everything static as given */
+    &.power-off {
+        /* the bulb*/
+        background: radial-gradient(112.05% 89.64% at 30% 30%, rgb(74, 85, 104) 0%, rgb(45, 55, 72) 50%, rgb(26, 32, 44) 100%);
+        box-shadow: inset 0px 0px 2.0rem rgba(0, 0, 0, 0.5);
+
+        /* inner square */
+        .inner-square {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            filter: blur(.8rem);
+        }
+
+        /* inner vertical bar */
+        .inner-bar {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0;
+        }
+    }
+
+    &.power-on {
+        background: radial-gradient(112.05% 89.64% at 30% 30%, rgb(var(--bulb-rgb)) 0%, rgba(var(--bulb-rgb), 0.86) 50%, rgba(var(--bulb-rgb), 0.6) 100%);
+        box-shadow: 0rem 0rem calc(2rem + (var(--bulb-brightness) * 4rem)) rgba(var(--bulb-rgb), calc(var(--bulb-brightness) * 0.6)),
+            inset 0rem 0rem 2rem rgba(var(--bulb-rgb), 0.4);
+
+        .inner-square {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+            filter: blur(.8rem);
+            opacity: calc(0.3 + (var(--bulb-brightness) * 0.2));
+        }
+
+        .inner-bar {
+            background: linear-gradient(180deg, rgb(var(--bulb-rgb)) 0%, rgb(255, 255, 255) 100%);
+            box-shadow: 0rem 0rem 1rem rgb(var(--bulb-rgb));
+            opacity: var(--bulb-brightness * 7);
+        }
+    }
+}
