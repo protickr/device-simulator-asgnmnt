@@ -10,7 +10,7 @@ A full-stack web application that allows users to interact with and control virt
 
 > **Note:** The backend is deployed on Render's free tier, which spins down after periods of inactivity. Please allow up to a minute for the initial request to process while the service restarts. Subsequent requests will be processed immediately.  
   
-_the spinning fan took quite sometime to implement, especially to avoid jitter and acceleration and decelleration_ 
+_the spinning fan took quite sometime to implement, especially to avoid jitter and acceleration and deceleration_ 
 
 ## 📂 Project Structure
 
@@ -25,6 +25,26 @@ _the spinning fan took quite sometime to implement, especially to avoid jitter a
 - **Backend:** PHP (Laravel).
 - **Database:** MySQL.
 - **ORM:** Eloquent
+
+### Backend
+The backend is built using **PHP (Laravel)** and follows a structured approach to ensure scalability and maintainability.
+
+- **Database:** **MySQL** is used as the primary relational database management system to store application data reliably.
+- **ORM:** **Eloquent ORM** is utilized for database interactions. This provides an abstraction layer that allows for flexible data operations and seamless switching between different database service providers (e.g., PostgreSQL, MySQL) without major code refactoring.
+- **Request Handling:** Custom **Request** classes are used to validate incoming data before it reaches the controller. This layer also handles the conversion of data keys from JavaScript's `camelCase` convention to the `snake_case` convention used in the PHP/MySQL database columns.
+- **Response Handling:** A dedicated **Response** mechanism is employed to serialize data and convert property names back from `snake_case` to `camelCase` before sending it to the client, ensuring consistent conventions across the stack.
+- **API Documentation:** **Scramble** is used for automatic API documentation generation and serving, making it easy to explore and test endpoints.
+
+### Frontend
+The frontend is a **Single Page Application (SPA)** built with **React**, designed for a responsive and interactive user experience.
+
+- **UI & Interactions:** **React** is used to build the user interface, managing the DOM and handling complex user interactions efficiently.
+- **Type Safety:** **TypeScript** is employed to ensure compile-time data safety and strong typing, reducing runtime errors and improving developer experience.
+- **Data Validation:** **Zod** is used for runtime data validation. It also allows for inferring TypeScript types directly from validation schemas, ensuring consistency between runtime checks and compile-time types.
+- **API Client:** The native **Fetch API** is used for making HTTP requests to the backend.
+- **State Management:** **React Context** and **State** are used to manage application state, providing a lightweight and effective solution for sharing data across components.
+- **Error Handling:** **Error Boundaries** are implemented to gracefully handle uncaught errors in the component tree, preventing the entire app from crashing and displaying a user-friendly error page instead.
+- **Architecture:** The application follows a **Modular Component-Driven Architecture**, promoting code reusability and making the codebase easy to expand and maintain in the future.
 
 ## ⚙️ Setup Instructions
 
