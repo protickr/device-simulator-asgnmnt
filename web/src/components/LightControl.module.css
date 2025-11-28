@@ -1,0 +1,76 @@
+.lightControl {
+    background: rgba(30, 41, 57, 0.55);
+    border: 1px solid rgba(70, 110, 170, 0.12);
+    border-radius: 1.2rem;
+    width: 44.8rem;
+    padding: 1.8rem 2rem;
+    /* min-height: 20rem;  */
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 .8rem 2.4rem rgba(6, 11, 19, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.controlRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid rgba(70, 110, 170, 0.12);
+    margin: 1rem 0;
+}
+
+.brightness {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.brightnessInfo {
+    display: flex;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: rgb(220, 230, 240);
+}
+
+.brightnessValue {
+    padding: 0 0.5rem;
+}
+
+.brightnessRange {
+    justify-self: stretch;
+}
+
+.colorList {
+    display: flex;
+    flex-direction: row;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.colorItem {
+    flex: 1 1 auto;
+    border-radius: 1rem;
+    min-height: 6vh;
+    cursor: pointer;
+}
+
+:global(div.selected) {
+    border: 2px solid rgb(242, 242, 248);
+}
+
+:global(div.inActive) {
+    filter: brightness(0.7)
+}
