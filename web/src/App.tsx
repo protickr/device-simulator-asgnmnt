@@ -3,6 +3,7 @@ import { FaFan, FaLightbulb } from "react-icons/fa";
 import {
   DndContext,
   MouseSensor,
+  pointerWithin,
   TouchSensor,
   useSensor,
   useSensors,
@@ -26,6 +27,7 @@ import ToolTip from "./components/ToolTop";
 import { PresetsProvider, usePresets } from "./contexts/PresetContext";
 import { DeviceProvider, useDevices } from "./contexts/DeviceContext";
 import type { PresetDetails, DeviceDetails } from "./schema";
+import EmptyDropArea from "./components/EmptyDropArea";
 
 // actual app entry point
 function AppContent() {
@@ -73,6 +75,11 @@ function AppContent() {
     if (over?.id === "drop-area") {
       // Get the attached preset data
       const presetData = active.data.current as PresetDetails;
+      console.log(
+        "🚀 ~ handleDragEnd ~ active.data.current:",
+        active.data.current
+      );
+
       const { configs } = presetData;
 
       // update states
@@ -116,6 +123,7 @@ function AppContent() {
         onDragStart={() => setShowTooltip(false)}
         onDragEnd={handleDragEnd}
         sensors={sensors}
+        collisionDetection={pointerWithin}
       >
         <div className="app">
           {/* sidebar starts */}
@@ -172,41 +180,52 @@ function AppContent() {
             </div>
 
             <div className="sim-field">
-              {livePreset === null && (
-                <DeviceDropZone>
-                  <p>Drag anything here</p>
-                </DeviceDropZone>
-              )}
+              <DeviceDropZone>
+                {livePreset === null && (
+                  <EmptyDropArea>
+                    <p>Drop anything here</p>
+                  </EmptyDropArea>
+                )}
 
-              {/* if livePreset is not null; meaning device preset has been dropped
+                {/* if livePreset is not null; meaning device preset has been dropped
               now or before refresh */}
-              {livePreset?.type?.length && livePreset.type === "fan" && (
-                <Fan
-                  isOn={isOn}
-                  setIsOn={setIsOn}
-                  speed={intensity}
-                  setSpeed={setIntensity}
-                  allowedSettings={livePreset.device.allowedSettings}
-                ></Fan>
-              )}
+                {livePreset?.type?.length && livePreset.type === "fan" && (
+                  <Fan
+                    isOn={isOn}
+                    setIsOn={setIsOn}
+                    speed={intensity}
+                    setSpeed={setIntensity}
+                    allowedSettings={livePreset.device.allowedSettings}
+                  />
+                )}
 
-              {/* 
-              { livePreset?.type?.length && livePreset.type === "light"  && 
-              <>
-                  <div className="device-area">
-                    <Light power={isOn} brightness={intensity} color={color}></Light>
-                  </div>
-                  <div className="controls-area">
-                    <LightControl
-                      isOn={isOn}
-                      setIsOn={setIsOn}
-                      brightness={intensity}
-                      setBrightness={setIntensity}
-                      allowedSettings={livePreset.device.allowedSettings}
-                    ></LightControl>
-                  </div>
-                </> 
-                } */}
+                {livePreset?.type?.length && livePreset.type === "light" && (
+                  <>
+                    {/* 
+                      todo: move to Light component later
+                    <div className="device-area">
+                      <Light
+                        power={isOn}
+                        brightness={intensity}
+                        color={color}
+                      />
+                    </div>
+                    <div className="controls-area">
+                      <LightControl
+                        isOn={isOn}
+                        setIsOn={setIsOn}
+                        brightness={intensity}
+                        setBrightness={setIntensity}
+                        allowedSettings={livePreset.device.allowedSettings}
+                      />
+                    </div> */}
+
+                    <EmptyDropArea>
+                      <p>Not implemented yet</p>
+                    </EmptyDropArea>
+                  </>
+                )}
+              </DeviceDropZone>
             </div>
           </div>
         </div>
@@ -308,7 +327,6 @@ function renderDraggableSidebarItemList({
   );
 }
 
-
 // main app component wrapper
 function App() {
   return (
@@ -324,15 +342,15 @@ function App() {
 export default App;
 
 /**
- * anything dropped in the edit field is a preset, there is no exception 
+ * anything dropped in the edit field is a preset, there is no exception
  * we can either save a new preset => presetId === null => save => presetId generated
  * or load an existing preset => presetId === uuid() => load => save => update preset
- * 
+ *
  * dragging a device from the sidebar creates a new preset with presetId === null
  * dragging a preset from the sidebar loads an existing preset with presetId === uuid()
- * 
+ *
  * In both cases, the edit field works with presets only.
  * and we send a "preset" to the "data" property of the draggable item
- * 
+ *
  * currentPreset => might or might not have an ID or we can generate a temporary one on the client side
  */
