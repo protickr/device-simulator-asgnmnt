@@ -115,7 +115,7 @@ function AppContent() {
     } else {
       localStorage.removeItem("livePreset");
     }
-  }, [livePreset, isOn, intensity, color]);
+  }, [livePreset, livePreset?.id, isOn, intensity, color]);
 
   return (
     <>
@@ -234,7 +234,7 @@ function AppContent() {
       >
         <SavePresetForm
           setIsModalOpen={setIsModalOpen}
-          // setLivePreset={setLivePreset}
+          setLivePreset={setLivePreset}
           prevPresetName={livePreset?.name ?? ""}
           currentSettings={{
             type: livePreset?.type as string,
@@ -299,7 +299,6 @@ function renderDraggableSidebarItemList({
                   intensity: 0,
                   color: null,
                 },
-
                 deviceId: item.id,
                 type: item.type,
                 device: item,

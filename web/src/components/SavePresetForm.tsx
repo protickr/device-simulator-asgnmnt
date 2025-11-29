@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./SavePresetForm.module.css";
 import { usePresets } from "../contexts/PresetContext";
 import type { DeviceDetails, DeviceType, PresetCreate } from "../schema";
 
 interface SavePresetFormProps {
   setIsModalOpen: (isOpen: boolean) => void;
-  setLivePreset?: (
+  setLivePreset: (
     preset: (PresetCreate & { device: DeviceDetails }) | null
   ) => void;
   prevPresetName: string;
@@ -21,12 +21,23 @@ interface SavePresetFormProps {
 
 function SavePresetForm({
   setIsModalOpen,
+  setLivePreset,
   prevPresetName,
   currentSettings,
 }: SavePresetFormProps) {
   const [presetName, setPresetName] = useState(prevPresetName || "");
-  const { createPreset, updatePreset, isLoading } = usePresets(); // Use Context
+  const { createPreset, updatePreset, currentPreset, isLoading } = usePresets(); // Use Context
 
+  // react to the state change by the PresetContext
+  useEffect(() => {
+    if (!isLoading && currentPreset) {
+      setLivePreset(currentPreset);
+      setIsModalOpen(false);
+    }
+  }, [isLoading, currentPreset, setIsModalOpen, setLivePreset]);
+
+  // FIX: used to close-over stale currentPrest state's value
+  // useEffect fixed it
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!presetName || !currentSettings.type) return;
@@ -49,13 +60,10 @@ function SavePresetForm({
     } else {
       await createPreset(newPreset);
     }
-
-    setIsModalOpen(false);
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // setPresetName("");
     setIsModalOpen(false);
   };
 
