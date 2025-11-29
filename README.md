@@ -6,7 +6,6 @@ A full-stack web application that allows users to interact with and control virt
 
 - **Frontend Application:** [https://device-simulator-asgnmnt.vercel.app/](https://device-simulator-asgnmnt.vercel.app/)
 - **Backend API:** [https://device-simulator-asgnmnt.onrender.com/api](https://device-simulator-asgnmnt.onrender.com/api)
-- **API Docs:** [https://device-simulator-asgnmnt.onrender.com/docs/api#/](https://device-simulator-asgnmnt.onrender.com/docs/api#/)
 
 > **Note:** The backend is deployed on Render's free tier, which spins down after periods of inactivity. Please allow up to a minute for the initial request to process while the service restarts. Subsequent requests will be processed immediately.  
   
@@ -155,6 +154,6 @@ A Postman collection is included in the root directory: `device-simulator.postma
 - **Drag-and-Drop Interface:** Drag devices ( Fan, Light) from the sidebar to the canvas.
 - **Device Controls:**
     - **Fan:** Toggle Power, Adjust Speed.
-    - **Light:** Toggle Power, Adjust Brightness, Change Color Temperature. _not completed_
+    - **Light:** Toggle Power, Adjust Brightness, Change Color Temperature.
 - **Preset Management:** Save current configurations as presets and load them later.
 - **Persistence:** Data is saved to the database and persists across reloads.
